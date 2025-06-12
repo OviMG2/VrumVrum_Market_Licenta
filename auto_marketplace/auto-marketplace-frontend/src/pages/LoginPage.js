@@ -27,18 +27,18 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Obținem calea de redirecționare după login (dacă există)
+  
   const from = location.state?.from?.pathname || '/';
 
-  // Verificăm dacă utilizatorul a fost redirecționat din cauza expirării sesiunii
+  
   useEffect(() => {
-    // Verificăm URL-ul pentru parametrul 'expired'
+    
     const params = new URLSearchParams(location.search);
     if (params.get('expired') === 'true') {
       setSessionExpired(true);
     }
     
-    // Verificăm și state-ul din location (pentru redirecționări prin navigate)
+   
     if (location.state?.sessionExpired) {
       setSessionExpired(true);
     }
@@ -48,13 +48,13 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
-    // Resetăm erorile pentru câmpul modificat
+   
     if (formErrors[name]) {
       setFormErrors({ ...formErrors, [name]: '' });
     }
   };
 
-  // Funcție pentru a schimba vizibilitatea parolei
+  
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
