@@ -41,7 +41,7 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('-created_at');
   
-  // State-uri pentru paginare
+ 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -55,15 +55,15 @@ const HomePage = () => {
     setLoading(true);
     
     try {
-      // Construim obiectul de parametri pentru filtrare
+      
       const params = {
         ordering: sortBy,
         search: searchQuery,
         page: page,
-        page_size: pageSize, // Specificăm explicit dimensiunea paginii
+        page_size: pageSize, 
       };
       
-      // Adăugăm filtrele non-vide
+  
       if (filters.brand) params.brand = filters.brand;
       if (filters.model) params.model__icontains = filters.model;
       if (filters.condition_state) params.condition_state = filters.condition_state;
@@ -78,7 +78,7 @@ const HomePage = () => {
       if (filters.power_min) params.power__gte = filters.power_min;
       if (filters.power_max) params.power__lte = filters.power_max;
       
-      // Folosim fetch direct pentru a evita problemele cu interceptorii
+      
       const queryParams = new URLSearchParams(params).toString();
       const response = await fetch(`http://localhost:8000/api/listings/cars/?${queryParams}`, {
         method: 'GET',
@@ -94,19 +94,19 @@ const HomePage = () => {
       const data = await response.json();
       console.log("Date primite de la API:", data);
       
-      // Extragem datele în funcție de formatul răspunsului
+      
       if (data.results && Array.isArray(data.results)) {
-        // Format paginat de la DRF
+       
         setListings(data.results);
         
-        // Actualizăm informațiile despre paginare
+       
         setTotalCount(data.count || 0);
         
-        // Calculăm numărul total de pagini
+       
         const totalPages = Math.ceil((data.count || 0) / pageSize);
         setTotalPages(totalPages);
       } else if (Array.isArray(data)) {
-        // Array direct
+        
         setListings(data);
         setTotalCount(data.length);
         setTotalPages(1);
@@ -127,19 +127,19 @@ const HomePage = () => {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
-    // Resetăm la pagina 1 când se schimbă filtrele
+   
     setPage(1);
   };
 
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
-    // Resetăm la pagina 1 când se schimbă ordinea
+   
     setPage(1);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Resetăm la pagina 1 când se face o nouă căutare
+    
     setPage(1);
     fetchListings();
   };
@@ -165,21 +165,21 @@ const HomePage = () => {
       power_max: ''
     });
     setSearchQuery('');
-    // Resetăm la pagina 1 când se resetează filtrele
+    
     setPage(1);
   };
   
-  // Handler pentru schimbarea paginii
+  
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
-    // Scroll la început pentru o mai bună experiență utilizator
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
-  // Handler pentru schimbarea dimensiunii paginii
+ 
   const handlePageSizeChange = (event) => {
     setPageSize(parseInt(event.target.value, 10));
-    setPage(1); // Resetăm la pagina 1 când se schimbă dimensiunea paginii
+    setPage(1); 
   };
 
   const brandOptions = [
@@ -280,7 +280,7 @@ const HomePage = () => {
         Găsește-ți mașina visurilor
       </Typography>
       
-      {/* Bara de căutare */}
+      
       <Box component="form" onSubmit={handleSearch} sx={{ mb: 4 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={6}>
@@ -325,7 +325,7 @@ const HomePage = () => {
         </Grid>
       </Box>
       
-      {/* Filtre avansate */}
+      
       <Box sx={{ mb: 4, p: 2, bgcolor: 'background.paper', borderRadius: 1, boxShadow: 1 }}>
         <Typography variant="h6" gutterBottom>
           Filtre avansate
@@ -528,7 +528,7 @@ const HomePage = () => {
             />
           </Grid>
           
-          {/* Adăugăm filtrele pentru putere */}
+        
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
@@ -590,7 +590,7 @@ const HomePage = () => {
         </Grid>
       </Box>
       
-      {/* Filtrele active */}
+      
       {Object.entries(filters).some(([_, value]) => value !== '') && (
         <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           <Typography variant="subtitle1" sx={{ mr: 1 }}>
@@ -716,7 +716,7 @@ const HomePage = () => {
         </Box>
       )}
       
-      {/* Rezultatele căutării */}
+      
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
           <CircularProgress />
@@ -757,7 +757,7 @@ const HomePage = () => {
                   <CardActionArea component={RouterLink} to={`/listings/${listing.id}`}>
                     <CardMedia
                       component="img"
-                      height="220"  // Mărirea înălțimii imaginii de la 160 la 220
+                      height="220"  
                       image={listing.images && listing.images.length > 0 
                         ? listing.images.find(img => img.is_main)?.image_path || listing.images[0].image_path 
                         : placeholderCar
@@ -769,7 +769,7 @@ const HomePage = () => {
                         {listing.title}
                       </Typography>
                       
-                      {/* Informații condensate pe două rânduri în loc de trei */}
+                      
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="body2" color="text.secondary">
                           {listing.brand} {listing.model}, {listing.year_of_manufacture}
@@ -781,7 +781,7 @@ const HomePage = () => {
                         </Typography>
                       </Box>
                       
-                      {/* A doua linie de informații - doar cele esențiale */}
+                     
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                         <Box sx={{ display: 'flex' }}>
                           <Typography variant="body2" color="text.secondary">
@@ -801,7 +801,7 @@ const HomePage = () => {
           </Grid>
 
           
-          {/* Paginare */}
+     
           {totalPages > 1 && (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
               <Pagination 
