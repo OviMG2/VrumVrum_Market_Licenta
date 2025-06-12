@@ -30,34 +30,34 @@ const ProfilePage = () => {
     phone_number: user?.phone_number || '',
     city: user?.city || '',
     county: user?.county || '',
-    bio: user?.bio || '', // Adăugăm bio în starea inițială
+    bio: user?.bio || '', 
     show_email: user?.show_email !== undefined ? user.show_email : true,
     show_phone: user?.show_phone !== undefined ? user.show_phone : true,
   });
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   
-  const baseURL = 'http://localhost:8000'; // Setează URL-ul de bază al backend-ului
+  const baseURL = 'http://localhost:8000'; 
   
-  // Funcție pentru a construi URL-ul corect al imaginii
+
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     
-    // Dacă începe cu http sau https, este deja un URL complet
+    
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath;
     }
     
-    // Dacă începe cu slash, adăugăm doar domeniul
+    
     if (imagePath.startsWith('/')) {
       return `${baseURL}${imagePath}`;
     }
     
-    // Altfel, construim calea completă
+   
     return `${baseURL}/media/profile_images/${imagePath}`;
   };
   
-  // Setează URL-ul imaginii când se încarcă componenta
+  
   useEffect(() => {
     if (user?.profile_image) {
       setImagePreview(getImageUrl(user.profile_image));
@@ -95,7 +95,7 @@ const ProfilePage = () => {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Date invalid';
       
-      // Format date as DD/MM/YYYY HH:MM using native JavaScript
+      
       const day = date.getDate().toString().padStart(2, '0');
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const year = date.getFullYear();
@@ -112,13 +112,13 @@ const ProfilePage = () => {
     e.preventDefault();
     
     try {
-      // Creăm FormData pentru a trimite datele, inclusiv imaginea
+    
       const formData = new FormData();
       formData.append('real_name', profileData.real_name);
       formData.append('phone_number', profileData.phone_number);
       formData.append('city', profileData.city);
       formData.append('county', profileData.county);
-      formData.append('bio', profileData.bio); // Adăugăm bio la FormData
+      formData.append('bio', profileData.bio); 
       formData.append('show_email', profileData.show_email);
       formData.append('show_phone', profileData.show_phone);
       
@@ -130,7 +130,7 @@ const ProfilePage = () => {
       setIsEditing(false);
     } catch (error) {
       console.error('Eroare la actualizarea profilului:', error);
-      // Eventual, adăugați un mesaj de eroare pentru utilizator
+      
     }
   };
 
@@ -171,7 +171,7 @@ const ProfilePage = () => {
               {!imagePreview && (user?.username?.charAt(0).toUpperCase() || "U")}
             </Avatar>
             
-            {/* Indicator status activ */}
+           
             <Box
               sx={{
                 position: 'absolute',
@@ -180,7 +180,7 @@ const ProfilePage = () => {
                 width: 20,
                 height: 20,
                 borderRadius: '50%',
-                bgcolor: user?.is_active ? '#4CAF50' : '#9e9e9e', // Verde pentru activ, gri pentru inactiv
+                bgcolor: user?.is_active ? '#4CAF50' : '#9e9e9e', 
                 border: '2px solid white',
                 zIndex: 1
               }}
@@ -278,7 +278,7 @@ const ProfilePage = () => {
                     sx={{ mb: 2 }}
                   />
                 </Grid>
-                {/* Adăugăm câmpul pentru bio */}
+                
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -305,19 +305,7 @@ const ProfilePage = () => {
                     label="Afișează email"
                   />
                 </Grid>
-                {/* <Grid item xs={12} sm={6}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={profileData.show_phone}
-                        onChange={handleSwitchChange}
-                        name="show_phone"
-                        color="primary"
-                      />
-                    }
-                    label="Afișează număr de telefon"
-                  />
-                </Grid> */}
+                
               </Grid>
               
               <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 2 }}>
@@ -382,7 +370,7 @@ const ProfilePage = () => {
                   </Typography>
                 )}
 
-                {/* Adăugăm secțiunea pentru bio */}
+                
                 {user?.bio && (
                   <>
                     <Divider sx={{ my: 2 }} />
