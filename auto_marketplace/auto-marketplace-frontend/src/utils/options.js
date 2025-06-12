@@ -1,4 +1,4 @@
-// Opțiuni pentru selecturi
+
 
 export const brandOptions = [
   { value: 'Audi', label: 'Audi' },
