@@ -63,10 +63,7 @@ def for_you_recommendations(request):
         )
 
 def get_popular_listings(limit=12, user=None):
-    """
-    Obține cele mai populare anunțuri bazate pe numărul de interacțiuni și favorite.
-    Exclude anunțurile utilizatorului curent.
-    """
+  
    
     popular_listings = CarListing.objects.annotate(
         interaction_count=Count('interactions'),
