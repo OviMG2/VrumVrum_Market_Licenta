@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
-
+ 
 const NotFoundPage = () => {
   return (
     <Container maxWidth="md" sx={{ py: 8 }}>
