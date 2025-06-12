@@ -33,35 +33,35 @@ const FavoritesPage = () => {
     setError(null);
     
     try {
-      // Obținem lista de favorite de la API
+    
       const response = await listingsAPI.getFavorites();
-      console.log('Response from favorites API:', response); // Debug
+      console.log('Response from favorites API:', response); 
       
-      // Extragem datele favorite în funcție de structura răspunsului
+      
       let favoritesData = response.data?.results || response.data || [];
       
-      // Dacă nu avem nicio dată, afișăm mesajul corespunzător
+      
       if (!favoritesData.length) {
         setFavorites([]);
         setLoading(false);
         return;
       }
       
-      // Colectăm ID-urile anunțurilor favorite
+     
       const listingIds = [];
       
-      // Verificăm formatul de date pentru a extrage corect ID-urile anunțurilor
+     
       favoritesData.forEach(favorite => {
         if (favorite.car_listing) {
-          // Format: { id: 1, user: 1, car_listing: 5, ... }
+          
           if (typeof favorite.car_listing === 'number') {
             listingIds.push(favorite.car_listing);
           } else if (favorite.car_listing?.id) {
-            // Format: { id: 1, user: 1, car_listing: { id: 5, ... }, ... }
+            
             listingIds.push(favorite.car_listing.id);
           }
         } else if (favorite.id) {
-          // Format: { id: 5, brand: "...", ... }
+          
           listingIds.push(favorite.id);
         }
       });
@@ -74,34 +74,34 @@ const FavoritesPage = () => {
         return;
       }
       
-      // Obținem datele complete pentru fiecare anunț
+ 
       const fetchedListings = [];
       
-      // Folosim un array de promise-uri pentru a face toate cererile în paralel
+      
       const fetchPromises = listingIds.map(async (listingId) => {
         try {
           const listingData = await listingsAPI.getListing(listingId);
           if (listingData) {
             fetchedListings.push({
               ...listingData,
-              is_favorite: true // Setăm anunțul ca favorit
+              is_favorite: true 
             });
           }
         } catch (error) {
           console.error(`Eroare la obținerea anunțului ${listingId}:`, error);
-          // Continuăm cu restul anunțurilor chiar dacă unul eșuează
+          
         }
       });
       
-      // Așteptăm ca toate cererile să se finalizeze
+      
       await Promise.all(fetchPromises);
       
       console.log('Fetched complete listings:', fetchedListings);
       
-      // Actualizăm starea cu anunțurile obținute
+      
       setFavorites(fetchedListings);
       
-      // Actualizăm localStorage cu toate anunțurile favorite
+     
       const favoritesMap = {};
       fetchedListings.forEach(listing => {
         favoritesMap[listing.id] = true;
@@ -122,21 +122,21 @@ const FavoritesPage = () => {
     try {
       await listingsAPI.toggleFavorite(id);
       
-      // Înregistrăm interacțiunea în sistemul de recomandare
+      
       try {
         await recommendationsAPI.recordInteraction({
           listing_id: id,
-          type: 'unfavorite' // Înregistrăm ca eliminare din favorite
+          type: 'unfavorite' 
         });
       } catch (interactionErr) {
         console.error('Eroare la înregistrarea interacțiunii:', interactionErr);
-        // Nu întrerupem fluxul principal
+        
       }
       
-      // Actualizăm lista fără a face un nou request
+      
       setFavorites(favorites.filter(listing => listing.id !== id));
       
-      // Actualizăm și localStorage
+     
       const favoritesMap = JSON.parse(localStorage.getItem('userFavorites') || '{}');
       delete favoritesMap[id];
       localStorage.setItem('userFavorites', JSON.stringify(favoritesMap));
@@ -147,16 +147,16 @@ const FavoritesPage = () => {
     }
   };
   
-  // Funcție pentru înregistrarea interacțiunii de vizualizare
+  
   const handleViewDetails = async (id) => {
     try {
       await recommendationsAPI.recordInteraction({
         listing_id: id,
-        type: 'view' // Înregistrăm ca interacțiune de tip vizualizare
+        type: 'view' 
       });
     } catch (err) {
       console.error('Eroare la înregistrarea interacțiunii de vizualizare:', err);
-      // Nu întrerupem fluxul principal
+      
     }
   };
 
