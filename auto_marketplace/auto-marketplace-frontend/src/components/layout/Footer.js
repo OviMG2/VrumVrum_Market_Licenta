@@ -27,10 +27,10 @@ const Footer = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email.trim() !== '') {
-      // Simulăm trimiterea emailului
+     
       console.log(`Email abonat: ${email}`);
       setOpenSnackbar(true);
-      setEmail(''); // Resetăm câmpul după abonare
+      setEmail(''); 
     }
   };
 
@@ -43,7 +43,7 @@ const Footer = () => {
 
   return (
     <Box sx={{ 
-      bgcolor: '#333333', // Culoare gri antracit
+      bgcolor: '#333333', 
       color: 'white', 
       py: 6, 
       mt: 'auto',
@@ -51,7 +51,7 @@ const Footer = () => {
     }}>
       <Container maxWidth="lg">
         <Grid container spacing={5} alignItems="flex-start">
-          {/* Logo și descriere companie */}
+      
           <Grid item xs={12} md={4}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
               <DirectionsCarIcon sx={{ fontSize: 40, mr: 1.5 }} />
@@ -82,7 +82,7 @@ const Footer = () => {
             </Box>
           </Grid>
 
-          {/* Link-uri rapide - redesenate */}
+        
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ 
               position: 'relative', 
@@ -153,7 +153,7 @@ const Footer = () => {
             </Box>
           </Grid>
 
-          {/* Secțiune contact - redesenată */}
+        
           <Grid item xs={12} sm={6} md={5}>
             <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ 
               position: 'relative', 
@@ -272,7 +272,7 @@ const Footer = () => {
         </Box>
       </Container>
       
-      {/* Notification */}
+     
       <Snackbar 
         open={openSnackbar} 
         autoHideDuration={5000} 
