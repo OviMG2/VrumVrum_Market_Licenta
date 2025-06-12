@@ -43,7 +43,7 @@ const RegisterPage = () => {
   const { register, loading, error } = useAuth();
   const navigate = useNavigate();
 
-  // State pentru verificarea cerințelor parolei
+  
   const [passwordRequirements, setPasswordRequirements] = useState({
     length: false,
     uppercase: false,
@@ -56,12 +56,12 @@ const RegisterPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
-    // Resetăm erorile pentru câmpul modificat
+    
     if (formErrors[name]) {
       setFormErrors({ ...formErrors, [name]: '' });
     }
 
-    // Verificăm cerințele parolei dacă se modifică câmpul password
+   
     if (name === 'password') {
       setPasswordRequirements({
         length: value.length >= 8,
@@ -73,14 +73,14 @@ const RegisterPage = () => {
     }
   };
 
-  // Funcție pentru a schimba vizibilitatea parolei
+  
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleAdminCheckboxChange = (e) => {
     setFormData({ ...formData, is_admin_request: e.target.checked });
-    // Resetăm eroarea pentru codul de admin când checkbox-ul se schimbă
+    
     if (formErrors.admin_code) {
       setFormErrors({ ...formErrors, admin_code: '' });
     }
@@ -129,7 +129,7 @@ const RegisterPage = () => {
       return;
     }
     
-    // Pregătim datele pentru trimitere
+    
     const dataToSend = {
       username: formData.username,
       email: formData.email,
@@ -138,7 +138,7 @@ const RegisterPage = () => {
       password2: formData.password2,
     };
     
-    // Adăugăm codul de administrator doar dacă există o cerere de admin
+   
     if (formData.is_admin_request) {
       dataToSend.admin_code = formData.admin_code;
     }
@@ -152,10 +152,10 @@ const RegisterPage = () => {
     }
   };
 
-  // State pentru popover
+  
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // Funcții pentru gestionarea focusului pe câmpul de parolă
+  
   const handlePasswordFocus = (event) => {
     setAnchorEl(event.currentTarget);
     setPasswordFocused(true);
@@ -282,7 +282,7 @@ const RegisterPage = () => {
               }}
             />
             
-            {/* Popover pentru cerințele parolei */}
+           
             <Popover
               open={passwordFocused}
               anchorEl={anchorEl}
