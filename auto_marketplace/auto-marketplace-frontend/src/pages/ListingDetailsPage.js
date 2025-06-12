@@ -46,7 +46,7 @@ import {
   CardActions,
 } from '@mui/material';
 
-// Componenta pentru afișarea unui tab
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -67,7 +67,7 @@ function TabPanel(props) {
   );
 }
 
-// Proprietăți pentru tab-uri
+
 function a11yProps(index) {
   return {
     id: `listing-tab-${index}`,
@@ -101,20 +101,20 @@ const SimilarListings = ({ currentListing }) => {
     }
   }, [currentListing.id]);
 
-  // Funcție pentru a înregistra interacțiunea când se face click pe un anunț similar
+  
   const handleListingClick = async (listingId) => {
     try {
-      // Înregistrează interacțiunea cu anunțul similar
+     
       await recommendationsAPI.recordInteraction({
         listing_id: listingId,
         type: 'click'
       });
       
-      // Navigarea către pagina anunțului
+    
       navigate(`/listings/${listingId}`);
     } catch (err) {
       console.error('Eroare la înregistrarea interacțiunii:', err);
-      // Continuăm cu navigarea chiar dacă înregistrarea interacțiunii eșuează
+     
       navigate(`/listings/${listingId}`);
     }
   };
@@ -224,30 +224,30 @@ const ListingDetailsPage = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   
-  const baseURL = 'http://localhost:8000'; // Setează URL-ul de bază al backend-ului
+  const baseURL = 'http://localhost:8000'; 
   
-  // Funcție pentru a construi URL-ul corect al imaginii
+
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     
-    // Adăugăm un timestamp pentru a evita cache-ul browserului
+   
     const timestamp = new Date().getTime();
     
-    // Dacă începe cu http sau https, este deja un URL complet
+   
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return `${imagePath}?t=${timestamp}`;
     }
     
-    // Dacă începe cu slash, adăugăm doar domeniul
+    
     if (imagePath.startsWith('/')) {
       return `${baseURL}${imagePath}?t=${timestamp}`;
     }
     
-    // Altfel, construim calea completă
+   
     return `${baseURL}/media/profile_images/${imagePath}?t=${timestamp}`;
   };
   
-  // Obține detaliile anunțului
+  
   useEffect(() => {
     const fetchListing = async () => {
       try {
@@ -255,11 +255,10 @@ const ListingDetailsPage = () => {
         const data = await listingsAPI.getListing(id);
         console.log('Date listing primite:', data);
         
-        // Verificăm și starea favoritelor din localStorage pentru a menține starea între refresh-uri
+        
         if (isAuthenticated) {
           const favoritesMap = JSON.parse(localStorage.getItem('userFavorites') || '{}');
-          // Dacă există o stare contradictorie între API și localStorage, prioritizăm starea din API
-          // Doar dacă API nu returnează explicit starea de favorite, folosim localStorage
+          
           if (data.is_favorite === undefined && favoritesMap[id]) {
             data.is_favorite = true;
           }
@@ -267,7 +266,7 @@ const ListingDetailsPage = () => {
         
         setListing(data);
         
-        // Setează URL-ul imaginii de profil a vânzătorului
+        
         if (data?.user?.profile_image) {
           setSellerAvatarUrl(getImageUrl(data.user.profile_image));
         }
@@ -282,12 +281,11 @@ const ListingDetailsPage = () => {
     fetchListing();
   }, [id, isAuthenticated]);
   
-  // Efect pentru înregistrarea vizualizării anunțului
+
   useEffect(() => {
-    // Înregistrăm vizualizarea doar după ce anunțul a fost încărcat
-    // și doar dacă utilizatorul este autentificat
+   
     if (listing && isAuthenticated && !loading) {
-      // Înregistrează interacțiunea de vizualizare
+     
       try {
         console.log('Înregistrare vizualizare pentru anunțul ID:', id);
         recommendationsAPI.recordInteraction({
@@ -296,18 +294,16 @@ const ListingDetailsPage = () => {
         });
       } catch (err) {
         console.error('Eroare la înregistrarea interacțiunii de vizualizare:', err);
-        // Nu întrerupem fluxul principal în caz de eroare
+       
       }
     }
   }, [listing, id, isAuthenticated, loading]);
 
-
-  // Gestionarea schimbării tab-ului
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
   
-  // Adăugare/eliminare din favorite
+  
   const toggleFavorite = async () => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: `/listings/${id}` } });
@@ -318,7 +314,7 @@ const ListingDetailsPage = () => {
       setIsToggling(true);
       await listingsAPI.toggleFavorite(id);
       
-      // Înregistrăm și interacțiunea pentru sistemul de recomandare
+ 
       try {
         const interactionType = !listing.is_favorite ? 'favorite' : 'unfavorite';
         await recommendationsAPI.recordInteraction({
@@ -327,16 +323,16 @@ const ListingDetailsPage = () => {
         });
       } catch (interactionErr) {
         console.error('Eroare la înregistrarea interacțiunii:', interactionErr);
-        // Nu întrerupem fluxul principal
+        
       }
       
-      // Actualizăm starea locală
+     
       setListing(prevListing => ({
         ...prevListing,
         is_favorite: !prevListing.is_favorite
       }));
       
-      // Salvăm starea favorite în localStorage pentru a o menține între refresh-uri
+      
       const favoritesMap = JSON.parse(localStorage.getItem('userFavorites') || '{}');
       if (!listing.is_favorite) {
         favoritesMap[id] = true;
@@ -352,35 +348,35 @@ const ListingDetailsPage = () => {
     }
   };
   
-  // Navighează către pagina de profil a vânzătorului
+
   const navigateToSellerProfile = () => {
     if (listing?.user?.id) {
       navigate(`/user/${listing.user.id}`);
     }
   };
   
-  // Verifică dacă utilizatorul curent este proprietarul anunțului
+  
   const isOwner = isAuthenticated && user && listing && listing.user && user.id === listing.user.id;
   
-  // Verifică dacă utilizatorul curent este administrator
+  
   const isAdmin = isAuthenticated && user && user.is_admin;
   
-  // Navighează către pagina de editare
+  
   const handleEdit = () => {
     navigate(`/edit-listing/${id}`);
   };
   
-  // Deschide dialogul de confirmare pentru ștergere
+  
   const handleDeleteConfirm = () => {
     setDeleteDialogOpen(true);
   };
   
-  // Închide dialogul de confirmare pentru ștergere
+  
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
   };
   
-  // Șterge anunțul
+
   const handleDeleteListing = async () => {
     try {
       setDeleting(true);
@@ -418,7 +414,7 @@ const ListingDetailsPage = () => {
     );
   }
   
-  // Imagini pentru galerie
+  
   const images = listing.images && listing.images.length > 0
     ? listing.images.map(img => ({
         original: img.image_path,
@@ -430,7 +426,7 @@ const ListingDetailsPage = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
-          {/* Titlul și acțiunile */}
+         
           <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Box>
               <Typography variant="h4" component="h1" gutterBottom>
@@ -475,7 +471,7 @@ const ListingDetailsPage = () => {
             </Box>
           </Box>
           
-          {/* Bandă de informații pentru administratori */}
+         
           {isAdmin && !isOwner && (
             <Alert severity="info" sx={{ mb: 3 }}>
               <Typography variant="body2">
@@ -484,12 +480,12 @@ const ListingDetailsPage = () => {
             </Alert>
           )}
           
-          {/* Galeria de imagini */}
+       
           <Paper elevation={2} sx={{ mb: 4, overflow: 'hidden' }}>
             <ImageGallery images={images} />
           </Paper>
           
-          {/* Tab-uri cu informații */}
+          
           <Paper elevation={2} sx={{ mb: 4 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={tabValue} onChange={handleTabChange} aria-label="listing tabs">
@@ -539,7 +535,7 @@ const ListingDetailsPage = () => {
                       />
                     </Box>
 
-                    {/* Adaugă aici noile Chips */}
+                  
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                       {listing.right_hand_drive && (
                         <Chip 
@@ -704,7 +700,7 @@ const ListingDetailsPage = () => {
         </Grid>
         
         <Grid item xs={12} md={4}>
-          {/* Prețul și informații de contact */}
+          
           <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
             <Typography variant="h4" color="primary.main" gutterBottom>
               {typeof listing.price === 'number' 
@@ -754,7 +750,6 @@ const ListingDetailsPage = () => {
                     {!sellerAvatarUrl && (listing.user?.username?.charAt(0).toUpperCase() || "U")}
                   </Avatar>
                   
-                  {/* Indicator status online bazat pe is_online property */}
                   <Box
                     sx={{
                       position: 'absolute',
@@ -821,7 +816,7 @@ const ListingDetailsPage = () => {
                 startIcon={<Mail />}
                 sx={{ mb: 1 }}
                 onClick={() => {
-                  // Înregistrează interacțiunea de tip contact
+                  
                   try {
                     recommendationsAPI.recordInteraction({
                       listing_id: listing.id,
@@ -849,7 +844,7 @@ const ListingDetailsPage = () => {
                     e.preventDefault();
                     setShowPhone(true);
                   } else{
-                    // Înregistrează interacțiunea de tip contact
+                    
                     try {
                       recommendationsAPI.recordInteraction({
                         listing_id: listing.id,
@@ -867,7 +862,7 @@ const ListingDetailsPage = () => {
           </Paper>
           
           
-          {/* Recomandări/anunțuri similare */}
+         
           <Paper elevation={2} sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <DirectionsCarIcon color="primary" sx={{ mr: 1 }} />
@@ -880,13 +875,13 @@ const ListingDetailsPage = () => {
               Mașini similare care te-ar putea interesa:
             </Typography>
             
-            {/* Componenta SimilarListings va fi randată aici */}
+          
             <SimilarListings currentListing={listing} />
           </Paper>
         </Grid>
       </Grid>
       
-      {/* Dialog de confirmare ștergere */}
+     
       <Dialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
