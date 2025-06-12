@@ -1,23 +1,23 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
-// Cream contextul de autentificare
+
 const AuthContext = createContext(null);
 
-// Hook pentru a folosi contextul de autentificare
+
 export const useAuth = () => useContext(AuthContext);
 
-// Provider pentru context care va înconjura aplicația
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
   const baseURL = 'http://localhost:8000/api/';
   
-  // Interval pentru actualizarea activității utilizatorului (la fiecare 30 secunde)
+  
   const ACTIVITY_UPDATE_INTERVAL = 30 * 1000;
 
-  // Verificăm la încărcare dacă există un utilizator salvat
+
   useEffect(() => {
     const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
@@ -40,13 +40,12 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
   
-  // Setăm un interval pentru a actualiza timestamp-ul de activitate
   useEffect(() => {
     let activityInterval = null;
     
-    // Doar dacă utilizatorul este autentificat
+    
     if (user && !loading) {
-      // Funcție care trimite cerere la server pentru a actualiza last_activity
+      
       const updateActivity = async () => {
         try {
           const token = localStorage.getItem('token');
@@ -62,12 +61,12 @@ export const AuthProvider = ({ children }) => {
         }
       };
       
-      // Actualizăm imediat la autentificare și apoi la interval
+     
       updateActivity();
       activityInterval = setInterval(updateActivity, ACTIVITY_UPDATE_INTERVAL);
     }
     
-    // Cleanup la deconectare
+  
     return () => {
       if (activityInterval) {
         clearInterval(activityInterval);
@@ -75,24 +74,24 @@ export const AuthProvider = ({ children }) => {
     };
   }, [user, loading]);
 
-  // Funcție pentru autentificare
+  
   const login = async (credentials) => {
     setLoading(true);
     setError(null);
     
     try {
-      // Facem o cerere reală către API-ul de autentificare
+      
       const response = await axios.post(`${baseURL}users/login/`, credentials);
       
-      // Extragem datele din răspuns
+      
       const { access, refresh, user: userData } = response.data;
       
-      // Salvăm token-urile și informațiile utilizatorului
+     
       localStorage.setItem('token', access);
       localStorage.setItem('refreshToken', refresh);
       localStorage.setItem('user', JSON.stringify(userData));
       
-      // Setăm utilizatorul în state
+      
       setUser(userData);
       
       return { success: true };
@@ -105,13 +104,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funcție pentru înregistrare
+  
   const register = async (userData) => {
     setLoading(true);
     setError(null);
     
     try {
-      // Facem o cerere reală de înregistrare
+     
       await axios.post(`${baseURL}users/register/`, userData);
       return { success: true };
     } catch (err) {
@@ -123,7 +122,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funcție pentru deconectare
+  
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('refreshToken');
@@ -153,16 +152,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Funcție pentru actualizarea profilului
+ 
   const updateProfile = async (profileData) => {
     setLoading(true);
     setError(null);
     
     try {
-      // Luăm token-ul pentru autorizare
+      
       const token = localStorage.getItem('token');
       
-      // Facem cererea de actualizare a profilului
+ 
       const response = await axios.put(`${baseURL}users/profile/`, profileData, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -170,7 +169,7 @@ export const AuthProvider = ({ children }) => {
         }
       });
       
-      // Actualizăm utilizatorul în localStorage și state
+     
       const updatedUser = response.data;
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -179,7 +178,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Eroare la actualizarea profilului:', err);
       
-      // Gestionăm diferite tipuri de erori
+    
       const errorMessage = err.response?.data?.error || 
                            err.response?.data?.detail || 
                            'Eroare la actualizarea profilului';
@@ -194,7 +193,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // Valorile expuse de context
+ 
   const value = {
     user,
     loading,
