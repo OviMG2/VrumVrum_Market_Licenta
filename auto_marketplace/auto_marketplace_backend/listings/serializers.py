@@ -19,7 +19,7 @@ class CarListingSerializer(serializers.ModelSerializer):
     images = CarImageSerializer(many=True, read_only=True)
     features = CarFeatureSerializer(many=True, read_only=True)
     is_favorite = serializers.SerializerMethodField()
-    # Includem UserSerializer pentru a avea toate informatiile utilizatorului
+    
     user = UserSerializer(read_only=True)
     
     class Meta:
@@ -41,7 +41,7 @@ class CarListingSerializer(serializers.ModelSerializer):
         return False
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        # print("Features în serializer:", rep.get('features', []))
+     
         return rep
 
 class CarListingCreateSerializer(serializers.ModelSerializer):
@@ -76,21 +76,21 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
         features_data = []
         raw_features = self.context['request'].data.get('features', [])
         if isinstance(raw_features, list) and raw_features:
-        # Daca este o lista cu un singur element string JSON
+       
             if len(raw_features) == 1 and isinstance(raw_features[0], str):
                 try:
-                    # Parsăm stringul JSON din primul element
+                  
                     features_data = json.loads(raw_features[0])
                     print("Features după parsare din list[0] (create):", features_data)
                 except json.JSONDecodeError as e:
                     print(f"Eroare la parsarea features din list[0] (create): {e}")
                     features_data = []
             else:
-            # Dacă este o listă de obiecte, o folosim direct
+          
                 features_data = raw_features
                 print("Features luate direct din raw_features ca listă (create):", features_data)
         elif isinstance(raw_features, str):
-            # Dacă este un string, încercăm să-l deserializăm
+          
             try:
                 features_data = json.loads(raw_features)
                 print("Features după parsare din string (create):", features_data)
@@ -100,17 +100,17 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
                 
         validated_data.pop('features', None)
         
-        # Elimin câmpurile unnecessary pentru crearea obiectului
+    
         validated_data.pop('new_images', None)
         validated_data.pop('images_to_delete', None)
         
-        # Adaug utilizatorul curent
+      
         validated_data['user'] = self.context['request'].user
         
-        # Creez anunțul
+   
         car_listing = CarListing.objects.create(**validated_data)
         
-        # Adaug imaginile
+    
         for i, image_data in enumerate(images_data):
             CarImage.objects.create(
                 car_listing=car_listing,
@@ -118,7 +118,7 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
                 is_main=(i == 0)  
             )
         
-            # Adaug features separat
+          
         if features_data:
             for feature_data in features_data:
                 feature_name = feature_data.get('feature_name', '').strip()
@@ -133,8 +133,6 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
         return car_listing
     
     def update(self, instance, validated_data):
-        # print("Toate datele primite în request.data:", self.context['request'].data)
-        # print("Formatul raw al features în request.data:", self.context['request'].data.get('features', 'Nu există'))
         
         new_images_data = validated_data.pop('new_images', [])
         images_to_delete = validated_data.pop('images_to_delete', [])
@@ -148,21 +146,21 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
         
         
         if isinstance(raw_features, list) and raw_features:
-        # Dacă este o listă cu un singur element string JSON (caz problematic)
+       
             if len(raw_features) == 1 and isinstance(raw_features[0], str):
                 try:
-                    # Parsăm stringul JSON din primul element
+                    
                     features_data = json.loads(raw_features[0])
                     print("Features după parsare din list[0]:", features_data)
                 except json.JSONDecodeError as e:
                     print(f"Eroare la parsarea features din list[0]: {e}")
                     features_data = []
             else:
-            # Dacă este o listă de obiecte, o folosim direct
+       
                 features_data = raw_features
                 print("Features luate direct din raw_features ca listă:", features_data)
         elif isinstance(raw_features, str):
-        # Dacă este un string, încercăm să-l deserializăm
+     
             try:
                 features_data = json.loads(raw_features)
                 print("Features după parsare din string:", features_data)
@@ -173,15 +171,15 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
         print("Features_data final după toată procesarea:", features_data)
         validated_data.pop('features', None)
          
-        # Eliminăm câmpul 'images' dacă există (pentru compatibilitate)
+      
         validated_data.pop('images', None)
         
-        # Actualizăm câmpurile de bază ale anunțului
+      
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         
-        # Ștergem imaginile marcate pentru ștergere
+  
         if images_to_delete:
             if isinstance(images_to_delete, str):
                 try:
@@ -191,32 +189,32 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
             
             CarImage.objects.filter(id__in=images_to_delete, car_listing=instance).delete()
         
-        # Adăugăm imaginile noi
+       
         current_images = CarImage.objects.filter(car_listing=instance)
         has_main_image = current_images.filter(is_main=True).exists()
         
         for i, image_data in enumerate(new_images_data):
-            # Prima imagine este principală doar dacă nu există deja o imagine principală
+           
             is_main = (i == 0 and not has_main_image)
             CarImage.objects.create(
                 car_listing=instance,
                 image_path=image_data,
                 is_main=is_main
             )
-        # Șterg dotările existente
+      
         print("Features ce vor fi create:", features_data)
         CarFeature.objects.filter(car_listing=instance).delete()
-        # Actualizez dotările
+      
         if features_data:
             for feature_data in features_data:
-                 # Verific dacă este un obiect sau un string
+              
                 if isinstance(feature_data, dict):
                     feature_name = feature_data.get('feature_name', '').strip()
                     feature_value = feature_data.get('feature_value', '').strip()
                 else:
                     print(f"Ignorat feature invalid (nu este dict): {feature_data}")
                     continue
-                # feature_name = feature_data.get('feature_name', '').strip()
+              
                 if feature_name:
                     feature = CarFeature.objects.create(
                         car_listing=instance,
@@ -232,7 +230,7 @@ class CarListingCreateSerializer(serializers.ModelSerializer):
         return instance
     
     def to_representation(self, instance):
-        # Returnam reprezentarea completă, inclusiv ID
+       
         return CarListingSerializer(instance, context=self.context).data
 
 class FavoriteSerializer(serializers.ModelSerializer):
