@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
-// Material UI
+
 import {
     Container,
     Box,
@@ -27,7 +27,6 @@ import {
     DialogTitle
 } from '@mui/material';
 
-// Icons
 import {
     Visibility as VisibilityIcon,
     VisibilityOff as VisibilityOffIcon,
@@ -43,7 +42,7 @@ const AdminEditUser = () => {
     const navigate = useNavigate();
     const { user: currentUser } = useAuth();
 
-    // State
+    
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -52,7 +51,7 @@ const AdminEditUser = () => {
         username: '',
         email: '',
         real_name: '',
-        // display_name: '',
+        
         phone_number: '',
         city: '',
         county: '',
@@ -66,7 +65,7 @@ const AdminEditUser = () => {
         confirm_password: '',
     });
 
-    // UI state
+    
     const [showPassword, setShowPassword] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
     const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
@@ -75,14 +74,14 @@ const AdminEditUser = () => {
 
     const baseURL = 'http://localhost:8000';
 
-    // Verificăm dacă utilizatorul are permisiuni de admin
+   
     useEffect(() => {
         if (currentUser && !currentUser.is_admin) {
             navigate('/');
         }
     }, [currentUser, navigate]);
 
-    // Încărcăm datele utilizatorului
+   
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -99,7 +98,7 @@ const AdminEditUser = () => {
 
                 setUser(response.data);
 
-                // Populăm formularul cu datele utilizatorului
+               
                 setFormData({
                     username: response.data.username || '',
                     email: response.data.email || '',
@@ -110,15 +109,15 @@ const AdminEditUser = () => {
                     county: response.data.county || '',
                     bio: response.data.bio || '',
                     is_admin: response.data.is_admin || false,
-                    is_active: response.data.is_active !== false, // Default true
-                    profile_image: null, // Pentru încărcarea unei noi imagini
-                    show_email: response.data.show_email !== false, // Default true
-                    show_phone: response.data.show_phone !== false, // Default true
+                    is_active: response.data.is_active !== false, 
+                    profile_image: null, 
+                    show_email: response.data.show_email !== false, 
+                    show_phone: response.data.show_phone !== false, 
                     new_password: '',
                     confirm_password: '',
                 });
 
-                // Încărcăm imaginea de profil existentă
+              
                 if (response.data.profile_image) {
                     setImagePreview(getImageUrl(response.data.profile_image));
                 }
@@ -136,28 +135,28 @@ const AdminEditUser = () => {
         }
     }, [userId, currentUser]);
 
-    // Funcție pentru a construi URL-ul corect al imaginii
+    
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
 
-        // Adăugăm un timestamp pentru a evita cache-ul browserului
+       
         const timestamp = new Date().getTime();
 
-        // Dacă începe cu http sau https, este deja un URL complet
+        
         if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
             return `${imagePath}?t=${timestamp}`;
         }
 
-        // Dacă începe cu slash, adăugăm doar domeniul
+        
         if (imagePath.startsWith('/')) {
             return `${baseURL}${imagePath}?t=${timestamp}`;
         }
 
-        // Altfel, construim calea completă
+        
         return `${baseURL}/media/profile_images/${imagePath}?t=${timestamp}`;
     };
 
-    // Handler pentru schimbarea valorilor în formular
+  
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
 
@@ -174,12 +173,12 @@ const AdminEditUser = () => {
         }
     };
 
-    // Handler pentru încărcarea imaginii de profil
+  
     const handleImageChange = (e) => {
         const file = e.target.files[0];
 
         if (file) {
-            // Verificăm dacă este o imagine și nu depășește 5MB
+            
             if (!file.type.match('image.*')) {
                 setError('Vă rugăm să încărcați doar fișiere imagine.');
                 return;
@@ -190,7 +189,7 @@ const AdminEditUser = () => {
                 return;
             }
 
-            // Actualizăm starea și creăm un preview
+            
             setFormData({
                 ...formData,
                 profile_image: file
@@ -205,7 +204,7 @@ const AdminEditUser = () => {
     };
 
 
-    // Adaugă această funcție AICI, între handleImageChange și handleSubmit
+    
     const handleAdminStatusChange = async (e) => {
         try {
         const isAdmin = e.target.checked;
@@ -220,12 +219,12 @@ const AdminEditUser = () => {
             throw new Error('Nu sunteți autentificat');
         }
         
-        // Folosim endpoint-ul specific pentru toggle-admin
+  
         await axios.patch(`${baseURL}/api/users/admin/users/${userId}/toggle-admin/`, {}, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        // Actualizăm starea user pentru a reflecta schimbarea
+        
         setUser({
             ...user,
             is_admin: isAdmin
@@ -233,7 +232,7 @@ const AdminEditUser = () => {
         
         setSuccessMessage(`Utilizatorul este acum ${isAdmin ? 'administrator' : 'utilizator normal'}`);
         
-        // Ascundem mesajul după câteva secunde
+        
         setTimeout(() => {
             setSuccessMessage(null);
         }, 3000);
@@ -259,12 +258,12 @@ const AdminEditUser = () => {
             throw new Error('Nu sunteți autentificat');
           }
           
-          // Folosim endpoint-ul specific pentru toggle-active
+         
           await axios.patch(`${baseURL}/api/users/admin/users/${userId}/toggle-active/`, {}, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
-          // Actualizăm starea user pentru a reflecta schimbarea
+          
           setUser({
             ...user,
             is_active: isActive
@@ -272,7 +271,7 @@ const AdminEditUser = () => {
           
           setSuccessMessage(`Contul utilizatorului este acum ${isActive ? 'activ' : 'inactiv'}`);
           
-          // Ascundem mesajul după câteva secunde
+          
           setTimeout(() => {
             setSuccessMessage(null);
           }, 3000);
@@ -284,32 +283,32 @@ const AdminEditUser = () => {
 
 
 
-    // Handler pentru salvarea modificărilor
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Resetăm mesajele
+        
         setError(null);
         setSuccessMessage(null);
 
         try {
             setSaving(true);
 
-            // Verificăm dacă parolele coincid, dacă a fost introdusă o parolă nouă
+            
             if (formData.new_password && formData.new_password !== formData.confirm_password) {
                 setError('Parolele nu coincid.');
                 setSaving(false);
                 return;
             }
 
-            // Nu permitem administratorilor să-și dezactiveze propriul cont
+            
             if (parseInt(userId) === currentUser.id && !formData.is_active) {
                 setError('Nu puteți dezactiva propriul cont.');
                 setSaving(false);
                 return;
             }
 
-            // Nu permitem administratorilor să-și retragă propriile drepturi admin
+          
             if (parseInt(userId) === currentUser.id && !formData.is_admin && user.is_admin) {
                 setError('Nu puteți retrage propriile drepturi de administrator.');
                 setSaving(false);
@@ -322,10 +321,10 @@ const AdminEditUser = () => {
                 throw new Error('Nu sunteți autentificat');
             }
 
-            // Creăm un FormData pentru a putea trimite fișierul imagine
+            
             const data = new FormData();
 
-            // Adăugăm câmpurile la FormData
+         
             data.append('username', formData.username);
             data.append('email', formData.email);
             data.append('real_name', formData.real_name);
@@ -336,30 +335,28 @@ const AdminEditUser = () => {
             data.append('county', formData.county || '');
             data.append('bio', formData.bio || '');
             
-            // Convertim valorile boolean la 0/1 explicit
-            //data.append('is_admin', formData.is_admin ? 1 : 0);
-            //data.append('is_active', formData.is_active ? 1 : 0);
+            
             data.append('show_email', formData.show_email ? 1 : 0);
             data.append('show_phone', formData.show_phone ? 1 : 0);
             
-            // Adăugăm parola dacă există
+            
             if (formData.new_password) {
                 data.append('password', formData.new_password);
             }
             
-            // Adăugăm imaginea dacă există
+            
             if (formData.profile_image) {
                 data.append('profile_image', formData.profile_image);
             }
 
 
-            // Adaugă acest log aici
+          
             console.log("FormData trimis:");
             for (let pair of data.entries()) {
                 console.log(pair[0] + ': ' + pair[1]);
             }
 
-            // Trimitem datele la server
+          
             await axios.put(`${baseURL}/api/users/admin/users/${userId}/`, data, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -369,16 +366,16 @@ const AdminEditUser = () => {
             
             setSuccessMessage('Profilul utilizatorului a fost actualizat cu succes!');
 
-            // După un scurt delay, actualizăm pagina pentru a vedea modificările
+          
             setTimeout(() => {
-                window.location.reload(); // Reîncărcăm pagina pentru a vedea modificările
+                window.location.reload(); 
             }, 2000);
 
         } catch (err) {
             console.error('Eroare la actualizarea datelor utilizatorului:', err);
 
             if (err.response && err.response.data) {
-                // Afișăm mesajul de eroare de la server dacă există
+               
                 if (typeof err.response.data === 'object') {
                     const errorMessages = Object.entries(err.response.data)
                         .map(([key, value]) => `${key}: ${value}`)
@@ -395,16 +392,16 @@ const AdminEditUser = () => {
         }
     };
 
-    // Handler pentru resetarea parolei
+ 
     const handleResetPassword = async () => {
-        // Resetăm mesajele
+    
         setError(null);
         setSuccessMessage(null);
 
         try {
             setSaving(true);
 
-            // Verificăm dacă parolele coincid
+        
             if (formData.new_password !== formData.confirm_password) {
                 setError('Parolele nu coincid.');
                 setSaving(false);
@@ -417,24 +414,24 @@ const AdminEditUser = () => {
                 throw new Error('Nu sunteți autentificat');
             }
 
-            // Trimitem solicitarea de resetare parolă
+            
             await axios.post(`${baseURL}/api/users/admin/users/${userId}/reset-password/`, {
                 password: formData.new_password
             }, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            // Resetăm câmpurile de parolă
+            
             setFormData({
                 ...formData,
                 new_password: '',
                 confirm_password: ''
             });
 
-            // Închidem dialogul
+         
             setResetPasswordOpen(false);
 
-            // Afișăm un mesaj de succes
+          
             setSuccessMessage('Parola a fost resetată cu succes!');
 
         } catch (err) {
@@ -445,16 +442,16 @@ const AdminEditUser = () => {
         }
     };
 
-    // Handler pentru ștergerea contului
+    
     const handleDeleteUser = async () => {
-        // Resetăm mesajele
+        
         setError(null);
         setSuccessMessage(null);
 
         try {
             setSaving(true);
 
-            // Nu permitem ștergerea propriului cont
+          
             if (parseInt(userId) === currentUser.id) {
                 setError('Nu puteți șterge propriul cont.');
                 setSaving(false);
@@ -469,18 +466,18 @@ const AdminEditUser = () => {
             }
 
 
-            // Trimitem solicitarea de ștergere
+            
             await axios.delete(`${baseURL}/api/users/admin/users/${userId}/delete/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            // Închidem dialogul
+            
             setDeleteUserOpen(false);
 
-            // Afișăm un mesaj de succes
+            
             setSuccessMessage('Utilizatorul a fost șters cu succes!');
 
-            // După un scurt delay, redirecționăm
+           
             setTimeout(() => {
                 navigate('/admin/dashboard');
             }, 2000);
@@ -496,7 +493,7 @@ const AdminEditUser = () => {
         }
     };
 
-    // Afișăm loading în timpul încărcării
+  
     if (loading) {
         return (
             <Container sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
@@ -505,7 +502,7 @@ const AdminEditUser = () => {
         );
     }
 
-    // Afișăm eroare dacă utilizatorul nu are permisiuni
+   
     if (!currentUser || !currentUser.is_admin) {
         return (
             <Container sx={{ py: 4 }}>
@@ -550,7 +547,7 @@ const AdminEditUser = () => {
 
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
-                        {/* Imagine profil */}
+                     
                         <Grid item xs={12} display="flex" justifyContent="center">
                             <Box sx={{ position: 'relative' }}>
                                 <Avatar
@@ -587,7 +584,7 @@ const AdminEditUser = () => {
                             </Box>
                         </Grid>
 
-                        {/* Date de bază */}
+                       
                         <Grid item xs={12}>
                             <Typography variant="h6" gutterBottom>
                                 Informații de bază
@@ -601,7 +598,7 @@ const AdminEditUser = () => {
                                 name="username"
                                 value={formData.username}
                                 onChange={handleChange}
-                                //required
+                                
                             />
                         </Grid>
 
@@ -613,7 +610,7 @@ const AdminEditUser = () => {
                                 type="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                //required
+                               
                             />
                         </Grid>
 
@@ -624,20 +621,11 @@ const AdminEditUser = () => {
                                 name="real_name"
                                 value={formData.real_name}
                                 onChange={handleChange}
-                                //required
+                            
                             />
                         </Grid>
 
-                        {/* <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Nume afișat"
-                name="display_name"
-                value={formData.display_name || ''}
-                onChange={handleChange}
-                helperText="Opțional, va fi folosit în loc de numele utilizator"
-              />
-            </Grid> */}
+                       
 
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
@@ -699,7 +687,7 @@ const AdminEditUser = () => {
                             />
                         </Grid>
 
-                        {/* Setări cont */}
+                       
                         <Grid item xs={12}>
                             <Divider sx={{ my: 2 }} />
                             <Typography variant="h6" gutterBottom>
@@ -761,25 +749,13 @@ const AdminEditUser = () => {
                             />
                         </Grid>
 
-                        {/* <Grid item xs={12} sm={6}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.show_phone}
-                                        onChange={handleChange}
-                                        name="show_phone"
-                                        color="primary"
-                                    />
-                                }
-                                label="Arată telefonul public"
-                            />
-                        </Grid> */}
+                       
 
                         <Grid item xs={12}>
                             <Divider sx={{ my: 2 }} />
                         </Grid>
 
-                        {/* Butoane de acțiune */}
+                        
                         <Grid item xs={12} sm={4}>
                             <Button
                                 fullWidth
@@ -827,7 +803,7 @@ const AdminEditUser = () => {
                 </form>
             </Paper>
 
-            {/* Dialog pentru resetarea parolei */}
+            
             <Dialog open={resetPasswordOpen} onClose={() => setResetPasswordOpen(false)}>
                 <DialogTitle>Resetare parolă</DialogTitle>
                 <DialogContent>
@@ -881,7 +857,7 @@ const AdminEditUser = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Dialog pentru ștergerea utilizatorului */}
+           
             <Dialog open={deleteUserOpen} onClose={() => setDeleteUserOpen(false)}>
                 <DialogTitle>Șterge utilizator</DialogTitle>
                 <DialogContent>
