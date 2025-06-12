@@ -13,7 +13,7 @@ urlpatterns = [
     
     path('<int:pk>/', UserDetailView.as_view(), name='user-detail'),
     
-    # Endpoint-uri pentru admin
+    
     path('admin/users/<int:pk>/', views.AdminUserEditView.as_view(), name='admin-user-edit'),
     path('admin/users/<int:pk>/toggle-admin/', views.toggle_admin_status, name='toggle-admin-status'),
     path('admin/users/<int:pk>/toggle-active/', views.toggle_active_status, name='toggle-active-status'),
