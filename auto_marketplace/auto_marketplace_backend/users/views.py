@@ -116,7 +116,7 @@ class UserDetailView(generics.RetrieveAPIView):
 
 
 class AdminUserEditView(generics.RetrieveUpdateDestroyAPIView):
-    """View pentru editarea utilizatorilor de către administratori"""
+    
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
     permission_classes = [IsAdminUser]
