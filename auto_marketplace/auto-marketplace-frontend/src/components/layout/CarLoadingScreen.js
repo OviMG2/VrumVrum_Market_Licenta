@@ -5,7 +5,7 @@ import SpeedIcon from '@mui/icons-material/Speed';
 const LoadingScreen = ({ isLoading }) => {
   const [progress, setProgress] = useState(0);
   
-  // Simulează progresul de încărcare - și mai rapid
+  
   useEffect(() => {
     if (isLoading) {
       const timer = setInterval(() => {
@@ -14,9 +14,9 @@ const LoadingScreen = ({ isLoading }) => {
             clearInterval(timer);
             return 100;
           }
-          return prevProgress + 10; // Incrementare foarte rapidă 
+          return prevProgress + 10; 
         });
-      }, 50); // Interval și mai scurt
+      }, 50); 
       
       return () => {
         clearInterval(timer);
@@ -48,25 +48,25 @@ const LoadingScreen = ({ isLoading }) => {
         sx={{
           position: 'relative',
           width: '320px',
-          height: '100px', // Înălțime mărită pentru a avea spațiu pentru mașină și șosea
+          height: '100px', 
           mb: 2,
         }}
       >
-        {/* Șoseaua - mutată mai jos */}
+     
         <Box
           sx={{
             position: 'absolute',
             left: 0,
-            bottom: '20px', // Poziționat mai jos
+            bottom: '20px', 
             width: '100%',
-            height: '20px', // Înălțime mărită
-            bgcolor: '#444', // Gri închis pentru asfalt
+            height: '20px', 
+            bgcolor: '#444', 
             borderRadius: '4px',
             overflow: 'hidden',
             boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.3)',
           }}
         >
-          {/* Linia mediană a șoselei */}
+       
           <Box
             sx={{
               position: 'absolute',
@@ -74,11 +74,11 @@ const LoadingScreen = ({ isLoading }) => {
               top: '45%',
               width: '100%',
               height: '10%',
-              bgcolor: '#f5f5f5', // Linie albă continuă
+              bgcolor: '#f5f5f5', 
             }}
           />
           
-          {/* Marcaje rutiere - dungi întrerupte */}
+     
           {Array.from({ length: 12 }).map((_, i) => (
             <Box
               key={i}
@@ -88,7 +88,7 @@ const LoadingScreen = ({ isLoading }) => {
                 top: '45%',
                 width: '5%',
                 height: '10%',
-                bgcolor: '#f5f5f5', // Linii albe
+                bgcolor: '#f5f5f5', 
               }}
             />
           ))}
