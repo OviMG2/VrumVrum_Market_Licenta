@@ -28,9 +28,9 @@ const RecommendationsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isToggling, setIsToggling] = useState(null);
-  const [tabValue, setTabValue] = useState(0); // Utilizăm index numeric în loc de string
+  const [tabValue, setTabValue] = useState(0); 
 
-  // Mapare între indexul taburilor și tipurile de algoritmi
+  
   const algorithmTypes = ['hybrid', 'collaborative', 'content'];
 
   useEffect(() => {
@@ -65,13 +65,13 @@ const RecommendationsPage = () => {
     try {
       await listingsAPI.toggleFavorite(id);
 
-      // Înregistrăm interacțiunea
+      
       await recommendationsAPI.recordInteraction({
         listing_id: id,
         type: 'favorite'
       });
 
-      // Actualizăm starea locală
+      
       setRecommendations(
         recommendations.map(listing =>
           listing.id === id
@@ -80,7 +80,7 @@ const RecommendationsPage = () => {
         )
       );
 
-      // Actualizăm localStorage
+      
       const favoritesMap = JSON.parse(localStorage.getItem('userFavorites') || '{}');
       if (favoritesMap[id]) {
         delete favoritesMap[id];
@@ -95,7 +95,7 @@ const RecommendationsPage = () => {
     }
   };
 
-  // Înregistrăm interacțiunea de vizualizare detalii
+  
   const handleViewDetails = async (id) => {
     try {
       await recommendationsAPI.recordInteraction({
@@ -142,7 +142,7 @@ const RecommendationsPage = () => {
           Pe baza preferințelor și interacțiunilor tale, am selectat următoarele mașini care credem că ți-ar plăcea.
         </Typography>
 
-        {/* Selector algoritm - cu indexuri numerice pentru taburi */}
+        
         <Box sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={tabValue}
