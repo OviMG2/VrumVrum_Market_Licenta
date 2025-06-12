@@ -4,13 +4,13 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-// Componente de layout
+
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Chatbot from './components/chatbot/Chatbot';
 import CarLoadingScreen from './components/layout/CarLoadingScreen';
 
-// Pagini
+
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -25,24 +25,24 @@ import RecommendationsPage from './pages/RecommendationsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import { SessionExpiredModal } from './components/SessionExpiredModal';
 
-// Pagini de administrator
+
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminEditUser from './pages/admin/AdminEditUser';
 
-// Rută protejată (necesită autentificare)
+
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
-// Componenta care detectează schimbările de rută și afișează animația
+
 const RouteChangeDetector = ({ setIsLoading }) => {
   const location = useLocation();
   
   useEffect(() => {
     setIsLoading(true);
     
-    // Ascunde animația după un timp
+ 
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500); // durată de 1.5 secunde pentru animație
+    }, 1500); 
     
     return () => clearTimeout(timer);
   }, [location.pathname, setIsLoading]);
@@ -50,7 +50,7 @@ const RouteChangeDetector = ({ setIsLoading }) => {
   return null;
 };
 
-// Componenta de gardă pentru rutele de administrator
+
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
@@ -65,7 +65,7 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-// Tema personalizată
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -86,12 +86,12 @@ const theme = createTheme({
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   
-  // Simulează încărcarea inițială la deschiderea site-ului
+
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // durată mai lungă pentru încărcarea inițială
+    }, 2000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -159,7 +159,7 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Rute de administrator */}
+            
                 <Route path="/admin/dashboard" element={
                   <AdminRoute>
                     <AdminDashboard />
