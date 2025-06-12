@@ -26,15 +26,15 @@ const FinancialCalculator = ({ price }) => {
   
   const [formData, setFormData] = useState({
     price: price || 10000,
-    down_payment: Math.round((price || 10000) * 0.2), // 20% avans implicit
-    loan_term: 60, // 5 ani implicit
-    interest_rate: 7.5, // 7.5% dobândă implicită
+    down_payment: Math.round((price || 10000) * 0.2), 
+    loan_term: 60, 
+    interest_rate: 7.5, 
   });
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Validăm pentru a nu permite valori negative sau mai mari decât prețul (pentru avans)
+    
     if (name === 'down_payment' && (value < 0 || value > formData.price)) {
       return;
     }
@@ -61,7 +61,7 @@ const FinancialCalculator = ({ price }) => {
     }
   };
   
-  // Convertim rezultatele pentru grafic
+  
   const prepareChartData = () => {
     if (!result || !result.payment_schedule) return [];
     
@@ -267,7 +267,6 @@ const FinancialCalculator = ({ price }) => {
             </Grid>
           </Paper>
           
-          {/* Grafic evoluție împrumut */}
           <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
             <Typography variant="h6" gutterBottom>
               Evoluție împrumut
@@ -322,7 +321,7 @@ const FinancialCalculator = ({ price }) => {
             </Box>
           </Paper>
           
-          {/* Plan de plată */}
+       
           <Paper elevation={2} sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Plan de plată
