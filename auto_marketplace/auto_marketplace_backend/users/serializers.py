@@ -27,16 +27,16 @@ class UserSerializer(serializers.ModelSerializer):
             'last_activity',
             'is_online'
         ]
-        # Excludem câmpurile sensibile precum parola
+       
         extra_kwargs = {
             'password': {'write_only': True}
         }
     
     def to_representation(self, instance):
-        # Obține reprezentarea standard
+       
         representation = super().to_representation(instance)
         
-        # Aplică opțiunile de confidențialitate
+       
         if not instance.show_email:
             representation['email'] = None
         
@@ -57,10 +57,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Parolele nu se potrivesc"})
-        # Verificăm codul de administrator dacă este furnizat
+      
         admin_code = attrs.get('admin_code')
-        if admin_code:
-            # Setăm codul secret pentru administratori
+        if admin_code:         
             
             ADMIN_SECRET_CODE = "AutoLux2024Secret"  
             
@@ -69,15 +68,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        # Eliminăm câmpul password2 înainte de creare
+       
         validated_data.pop('password2')
         
-        # Verificăm dacă există un cod de administrator valid
+       
         is_admin = False
         admin_code = validated_data.pop('admin_code', None)
         
         if admin_code:
-            ADMIN_SECRET_CODE = "AutoLux2024Secret"  # Același cod secret ca în validate
+            ADMIN_SECRET_CODE = "AutoLux2024Secret"  
             is_admin = admin_code == ADMIN_SECRET_CODE
         
         user = User.objects.create_user(
@@ -85,7 +84,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             real_name=validated_data['real_name'],
             password=validated_data['password'],
-            is_admin=is_admin  # Setăm is_admin în funcție de validarea codului
+            is_admin=is_admin  
         )
         return user
 
@@ -111,7 +110,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
-        # Actualizăm toate câmpurile din validated_data
+      
         for attr, value in validated_data.items():
             if value is not None:
                 setattr(instance, attr, value)
