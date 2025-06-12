@@ -15,6 +15,5 @@ urlpatterns = [
     path('api/admin/users/', views.admin_users_list, name='admin-users-list'),
 ]
 
-# Adăugare URL-uri pentru fișiere media în modul de dezvoltare
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
