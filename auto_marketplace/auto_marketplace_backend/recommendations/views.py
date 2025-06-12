@@ -25,9 +25,7 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def for_you_recommendations(request):
-    """
-    Generează recomandări personalizate pentru utilizator bazate pe preferințele sale.
-    """
+   
     user = request.user
     algorithm = request.query_params.get('algorithm', 'hybrid')
     
