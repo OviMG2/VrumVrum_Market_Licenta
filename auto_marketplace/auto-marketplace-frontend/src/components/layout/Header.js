@@ -17,7 +17,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import ListSubheader from '@mui/material/ListSubheader';
 
-// Iconuri
+
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
@@ -36,30 +36,28 @@ const Header = () => {
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState(null);
   
-  const baseURL = 'http://localhost:8000'; // Setează URL-ul de bază al backend-ului
-  
-  // Funcție pentru a construi URL-ul corect al imaginii
+  const baseURL = 'http://localhost:8000'; 
+
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     
-    // Adăugăm un timestamp pentru a evita cache-ul browserului
+    
     const timestamp = new Date().getTime();
     
-    // Dacă începe cu http sau https, este deja un URL complet
+    
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return `${imagePath}?t=${timestamp}`;
     }
     
-    // Dacă începe cu slash, adăugăm doar domeniul
     if (imagePath.startsWith('/')) {
       return `${baseURL}${imagePath}?t=${timestamp}`;
     }
     
-    // Altfel, construim calea completă
+   
     return `${baseURL}/media/profile_images/${imagePath}?t=${timestamp}`;
   };
   
-  // Setează URL-ul imaginii de avatar când se încarcă componenta sau se schimbă utilizatorul
+  
   useEffect(() => {
     console.log("User changed:", user?.username);
     if (user?.profile_image) {
@@ -67,7 +65,7 @@ const Header = () => {
       console.log("Setting avatar URL:", newAvatarUrl);
       setAvatarUrl(newAvatarUrl);
     } else {
-      // Resetăm URL-ul atunci când nu există imagine de profil
+     
       console.log("Resetting avatar URL");
       setAvatarUrl(null);
     }
@@ -95,18 +93,18 @@ const Header = () => {
     navigate('/');
   };
 
-  // Pagini de navigare disponibile pentru toți utilizatorii
+  
   const pages = [
     { title: 'Acasă', path: '/' },
   ];
 
-  // Pagini disponibile doar pentru utilizatorii autentificați
+
   const authenticatedPages = [
     { title: 'Recomandate', path: '/recommendations', icon: <RecommendIcon /> },
     { title: 'Adaugă anunț', path: '/create-listing', icon: <AddCircleIcon /> },
   ];
   
-  // Generăm meniurile pentru versiunea mobilă
+  
   const renderMobileMenu = () => {
     const menuItems = [
       ...pages.map((page) => (
@@ -117,7 +115,7 @@ const Header = () => {
     ];
     
     if (isAuthenticated) {
-      // Adăugăm paginile pentru utilizatorii autentificați
+      
       menuItems.push(
         ...authenticatedPages.map((page) => (
           <MenuItem key={page.title} onClick={handleCloseNavMenu} component={RouterLink} to={page.path}>
@@ -126,7 +124,7 @@ const Header = () => {
         ))
       );
       
-      // Adăugăm opțiunile de administrator dacă utilizatorul are drepturi
+    
       if (user?.is_admin) {
         menuItems.push(
           <Divider key="admin-divider" />,
@@ -149,7 +147,7 @@ const Header = () => {
     return menuItems;
   };
   
-  // Generăm meniul pentru profilul utilizatorului
+  
   const renderUserMenu = () => {
     const menuItems = [
       <MenuItem 
@@ -189,7 +187,7 @@ const Header = () => {
       </MenuItem>
     ];
     
-    // Adăugăm opțiuni de administrator dacă utilizatorul are drepturi
+    
     if (user?.is_admin) {
       menuItems.push(
         <Divider key="admin-divider" />,
@@ -208,7 +206,7 @@ const Header = () => {
       );
     }
     
-    // Adăugăm opțiunea de deconectare
+
     menuItems.push(
       <Divider key="logout-divider" />,
       <MenuItem key="logout" onClick={handleLogout}>
@@ -226,7 +224,7 @@ const Header = () => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* Logo pentru desktop */}
+         
           <DirectionsCarIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
@@ -246,7 +244,7 @@ const Header = () => {
             VrumVrum
           </Typography>
 
-          {/* Meniu pentru mobil */}
+        
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -280,7 +278,7 @@ const Header = () => {
             </Menu>
           </Box>
 
-          {/* Logo pentru mobil */}
+        
           <DirectionsCarIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
@@ -301,7 +299,7 @@ const Header = () => {
             AutoMarket
           </Typography>
 
-          {/* Meniu pentru desktop */}
+      
           <Box sx={{ 
             flexGrow: 1, 
             display: { xs: 'none', md: 'flex' }, 
@@ -315,7 +313,7 @@ const Header = () => {
                 sx={{ 
                   my: 2, 
                   color: 'white', 
-                  height: '40px', // Setăm o înălțime fixă
+                  height: '40px',
                   display: 'flex',
                   alignItems: 'center'
                 }}
@@ -332,7 +330,7 @@ const Header = () => {
                 sx={{ 
                   my: 2, 
                   color: 'white', 
-                  height: '40px', // Setăm o înălțime fixă
+                  height: '40px', 
                   display: 'flex',
                   alignItems: 'center'
                 }}
@@ -341,7 +339,7 @@ const Header = () => {
               </Button>
             ))}
             
-            {/* Opțiune de dashboard admin pentru desktop */}
+          
             {isAuthenticated && user?.is_admin && (
               <Button
                 component={RouterLink}
@@ -350,17 +348,17 @@ const Header = () => {
                   my: 2, 
                   color: 'white', 
                   display: 'inline-flex',
-                  height: '40px', // Setăm o înălțime fixă
+                  height: '40px', 
                   alignItems: 'center',
                   justifyContent: 'center',
-                  px: 1.5, // Padding orizontal
-                  minWidth: 'auto', // Lățime minimă
+                  px: 1.5, 
+                  minWidth: 'auto', 
                   bgcolor: 'rgba(255, 255, 255, 0.15)',
                   '&:hover': {
                     bgcolor: 'rgba(255, 255, 255, 0.25)',
                   },
                   ml: 2,
-                  borderRadius: 1 // Colțuri ușor rotunjite
+                  borderRadius: 1 
                 }}
                 startIcon={<DashboardIcon />}
               >
@@ -369,7 +367,7 @@ const Header = () => {
             )}
           </Box>
 
-          {/* Meniu utilizator */}
+         
           <Box sx={{ flexGrow: 0 }}>
             {isAuthenticated ? (
               <>
