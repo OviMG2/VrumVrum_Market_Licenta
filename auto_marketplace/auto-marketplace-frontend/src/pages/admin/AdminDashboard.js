@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
-// Material UI
+
 import {
   Container,
   Grid,
@@ -35,7 +35,7 @@ import {
   ToggleButton
 } from '@mui/material';
 
-// Icons
+
 import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
@@ -50,7 +50,7 @@ import EventIcon from '@mui/icons-material/Event';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
 import BrandingWatermarkIcon from '@mui/icons-material/BrandingWatermark';
 
-// Recharts
+
 import {
   PieChart,
   Pie,
@@ -65,14 +65,14 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-// Culorile pentru grafice
+
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
 const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // State
+ 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState(null);
@@ -81,18 +81,18 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [statsType, setStatsType] = useState('fuel'); // 'fuel', 'brand'
+  const [statsType, setStatsType] = useState('fuel'); 
   
   const baseURL = 'http://localhost:8000';
   
-  // Verificăm dacă utilizatorul este administrator
+
   useEffect(() => {
     if (user && !user.is_admin) {
       navigate('/');
     }
   }, [user, navigate]);
   
-  // Încărcăm datele pentru dashboard
+ 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -103,14 +103,14 @@ const AdminDashboard = () => {
           throw new Error('Token de autentificare lipsă');
         }
         
-        // Obținem statisticile pentru dashboard
+       
         const statsResponse = await axios.get(`${baseURL}/api/admin/dashboard/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
         setStats(statsResponse.data);
         
-        // Obținem lista de utilizatori
+        
         const usersResponse = await axios.get(`${baseURL}/api/admin/users/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -131,7 +131,7 @@ const AdminDashboard = () => {
     }
   }, [user]);
   
-  // Filtrare utilizatori în funcție de termenul de căutare
+  
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredUsers(users);
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
     }
   }, [searchTerm, users]);
   
-  // Funcție pentru reîmprospătarea datelor
+ 
   const refreshData = async () => {
     try {
       setRefreshing(true);
@@ -156,14 +156,14 @@ const AdminDashboard = () => {
         throw new Error('Token de autentificare lipsă');
       }
       
-      // Obținem statisticile actualizate
+      
       const statsResponse = await axios.get(`${baseURL}/api/admin/dashboard/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
       setStats(statsResponse.data);
       
-      // Obținem lista actualizată de utilizatori
+      
       const usersResponse = await axios.get(`${baseURL}/api/admin/users/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -180,7 +180,7 @@ const AdminDashboard = () => {
     }
   };
   
-  // Funcție pentru formatarea datelor
+  
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     
@@ -200,17 +200,17 @@ const AdminDashboard = () => {
     }
   };
   
-  // Funcție pentru navigarea la profilul utilizatorului
+ 
   const handleViewUser = (userId) => {
     navigate(`/user/${userId}`);
   };
   
-  // Funcție pentru editarea profilului utilizatorului
+ 
   const handleEditUser = (userId) => {
     navigate(`/admin/users/edit/${userId}`);
   };
   
-  // Funcție pentru schimbarea statusului activ al utilizatorului
+
   const handleToggleActive = async (userId, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
@@ -219,7 +219,7 @@ const AdminDashboard = () => {
         throw new Error('Token de autentificare lipsă');
       }
       
-      // Prevenim dezactivarea propriului cont
+      
       if (user && userId === user.id) {
         setError('Nu puteți dezactiva propriul cont.');
         return;
@@ -229,7 +229,7 @@ const AdminDashboard = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
-      // Actualizăm lista de utilizatori
+      
       setUsers(users.map(u => {
         if (u.id === userId) {
           return { ...u, is_active: !currentStatus };
@@ -237,7 +237,7 @@ const AdminDashboard = () => {
         return u;
       }));
       
-      // Actualizăm și lista filtrată
+     
       setFilteredUsers(filteredUsers.map(u => {
         if (u.id === userId) {
           return { ...u, is_active: !currentStatus };
@@ -250,19 +250,19 @@ const AdminDashboard = () => {
     }
   };
   
-  // Funcție pentru schimbarea tabului activ
+ 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  // Funcție pentru schimbarea tipului de statistici
+  
   const handleStatsTypeChange = (event, newValue) => {
     if (newValue !== null) {
       setStatsType(newValue);
     }
   };
 
-  // Funcție pentru a obține datele pentru graficul selectat
+ 
   const getChartData = () => {
     if (!stats?.listings) return [];
     
@@ -276,7 +276,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Funcție pentru a obține cheia de date pentru graficul selectat
+
   const getDataKey = () => {
     switch (statsType) {
       case 'fuel':
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Funcție pentru a obține titlul graficului selectat
+ 
   const getChartTitle = () => {
     switch (statsType) {
       case 'fuel':
@@ -300,7 +300,7 @@ const AdminDashboard = () => {
     }
   };
   
-  // Dacă utilizatorul nu este admin, nu afișăm nimic
+ 
   if (user && !user.is_admin) {
     return (
       <Container sx={{ py: 4 }}>
@@ -314,7 +314,7 @@ const AdminDashboard = () => {
     );
   }
   
-  // Afișăm loading spinner în timpul încărcării
+ 
   if (loading) {
     return (
       <Container sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
@@ -323,7 +323,7 @@ const AdminDashboard = () => {
     );
   }
   
-  // Afișăm eroarea dacă există
+ 
   if (error) {
     return (
       <Container sx={{ py: 4 }}>
@@ -355,7 +355,7 @@ const AdminDashboard = () => {
         </Button>
       </Box>
       
-      {/* Carduri cu statistici principale */}
+   
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ height: '100%' }}>
