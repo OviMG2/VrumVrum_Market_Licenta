@@ -16,7 +16,7 @@ class UserInteraction(models.Model):
     interaction_count = models.FloatField(default=1.0)
     last_interaction = models.DateTimeField(auto_now=True)
     first_interaction = models.DateTimeField(auto_now_add=True)
-    # Câmp pentru stocarea scorului interacțiunii, util pentru algoritmi de recomandare
+ 
     interaction_score = models.FloatField(default=0.0)
     
     class Meta:
@@ -32,18 +32,18 @@ class UserInteraction(models.Model):
         return f"{self.user.username} - {self.car_listing} - {self.interaction_type}"
     
     def save(self, *args, **kwargs):
-        # Calculăm un scor pentru interacțiune bazat pe tipul și frecvența acesteia
+        
         if self.interaction_type == 'favorit':
             self.interaction_score = 50.0
         elif self.interaction_type == 'contact':
             self.interaction_score = self.interaction_count * 5.0
-        else:  # vizualizare
+        else:  
             self.interaction_score = self.interaction_count * 0.1
             
-        # Aplicăm și un factor de decădere temporală 
+     
         days_since_first = (timezone.now() - self.first_interaction).days if self.first_interaction else 0
         if days_since_first > 0:
-            decay_factor = 1.0 / (1.0 + 0.1 * days_since_first)  # Factorul de decădere scade cu timpul
+            decay_factor = 1.0 / (1.0 + 0.1 * days_since_first)  
             self.interaction_score *= decay_factor
             
         super().save(*args, **kwargs)
