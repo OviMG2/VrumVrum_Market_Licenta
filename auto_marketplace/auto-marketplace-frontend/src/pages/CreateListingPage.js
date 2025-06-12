@@ -25,13 +25,13 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-// Adaugă aceste importuri la începutul fișierului
+
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-//import PhotoCamera from '@mui/icons-material/PhotoCamera';
+
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-// Opțiuni pentru selecturi
+
 const brandOptions = [
   { value: 'Audi', label: 'Audi' },
   { value: 'BMW', label: 'BMW' },
@@ -144,7 +144,7 @@ const colorOptions = [
   { value: 'alta culoare', label: 'Altă culoare' },
 ];
 
-// Schema de validare pentru anunț
+
 const validationSchema = Yup.object({
   title: Yup.string()
     .min(5, 'Titlul trebuie să aibă minim 5 caractere')
@@ -174,7 +174,7 @@ const validationSchema = Yup.object({
   transmission: Yup.string().required('Cutia de viteze este obligatorie'),
   drive_type: Yup.string().required('Tracțiunea este obligatorie'),
   emission_standard: Yup.string().required('Norma de poluare este obligatorie'),
-  description: Yup.string(), // Eliminăm limita de caractere
+  description: Yup.string(),
   features: Yup.array().of(
     Yup.object().shape({
       feature_name: Yup.string().notRequired('Numele dotării este obligatoriu'),
@@ -191,7 +191,7 @@ const validationSchema = Yup.object({
   location: Yup.string(),
 });
 
-// Pașii pentru formular
+
 const steps = ['Informații de bază', 'Detalii tehnice', 'Imagini și descriere', 'Finalizare'];
 
 
@@ -205,7 +205,7 @@ const CreateListingPage = () => {
   const [error, setError] = useState(null);
   const [previewImages, setPreviewImages] = useState([]);
 
-  // Formik pentru gestionarea formularului
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -239,29 +239,27 @@ const CreateListingPage = () => {
       setError(null);
       
       try {
-        // Creăm un FormData pentru a trimite imaginile
+        
         console.log('Valori complete la submit:', values);
         console.log('Features la submit:', values.features);
         const formData = new FormData();
         
-        // Adăugăm fiecare câmp la FormData
+        
         for (const key in values) {
           if (key === 'images') {
-            // Adăugăm fiecare imagine
+            
             values.images.forEach((image, index) => {
-              formData.append(`images[${index}]`, image);  // Notați formatul schimbat!
+              formData.append(`images[${index}]`, image);  
             });
           } else if (key === 'features') {
-            // console.log('Features înainte de filtrare:', values.features);
-            // Adăugăm dotările ca JSON
+            
             const filteredFeatures = values.features
             .filter(f => f.feature_name && f.feature_name.trim() !== '')
             .map(f => ({
               feature_name: f.feature_name.trim(),
               feature_value: f.feature_value ? f.feature_value.trim() : ''
             }));
-            // console.log('Features filtrate:', filteredFeatures);
-          // Trimite doar dacă există dotări relevante
+            
           if (filteredFeatures.length > 0) {
             const featuresJson = JSON.stringify(filteredFeatures);
             formData.append('features', featuresJson);
@@ -271,16 +269,16 @@ const CreateListingPage = () => {
           }
         }
         
-        // Trimitem anunțul
+       
         const response = await listingsAPI.createListing(formData);
         
         console.log('Răspuns primit:', response);
         
-        // Extragem ID-ul din răspuns
+        
         const listingId = response.id;
         
         if (listingId) {
-          // Redirecționăm către pagina anunțului
+          
           navigate(`/listings/${listingId}`);
         } else {
           console.error('Răspuns fără ID:', response);
@@ -289,13 +287,13 @@ const CreateListingPage = () => {
       } catch (err) {
         console.error('Eroare la crearea anunțului:', err);
         
-        // Gestionăm diferit tipurile de erori
+        
         if (err.detail) {
           setError(err.detail);
         } else if (err.message) {
           setError(err.message);
         } else if (typeof err === 'object' && err !== null) {
-          // Transformă obiectul de eroare într-un mesaj lizibil
+         
           const errorMessages = Object.entries(err)
             .map(([key, value]) => `${key}: ${value}`)
             .join(', ');
@@ -304,16 +302,16 @@ const CreateListingPage = () => {
           setError('A apărut o eroare la crearea anunțului. Vă rugăm să încercați din nou.');
         }
         
-        setActiveStep(0); // Revenim la primul pas pentru a vedea erorile
+        setActiveStep(0); 
       } finally {
         setLoading(false);
       }
     },
   });
 
-  // Gestionarea pașilor
+  
   const handleNext = () => {
-    // Validăm doar câmpurile din pasul curent
+    
     const fieldsToValidate = activeStep === 0
       ? ['title', 'brand', 'model', 'year_of_manufacture', 'price', 'condition_state', 'color']
       : activeStep === 1
@@ -322,17 +320,17 @@ const CreateListingPage = () => {
       ? ['description', 'images']
       : [];
     
-    // Verificăm dacă există erori pentru câmpurile din pasul curent
+  
     const stepHasErrors = fieldsToValidate.some(field => 
       formik.touched[field] && formik.errors[field]
     );
     
-    // Marcăm câmpurile ca atinse pentru a vedea erorile
+   
     fieldsToValidate.forEach(field => {
       formik.setFieldTouched(field, true);
     });
     
-    // Dacă nu există erori, trecem la pasul următor
+    
     if (!stepHasErrors) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -342,7 +340,7 @@ const CreateListingPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // Gestionarea adăugării/eliminării dotărilor
+  
   const addFeature = () => {
     formik.setFieldValue('features', [
       ...formik.values.features,
@@ -356,11 +354,11 @@ const CreateListingPage = () => {
     formik.setFieldValue('features', updatedFeatures);
   };
 
-  // Gestionarea încărcării imaginilor
+ 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
     
-    // Validăm fișierele (doar imagini, max 5MB)
+  
     const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
         alert(`Fișierul "${file.name}" nu este o imagine.`);
@@ -373,10 +371,10 @@ const CreateListingPage = () => {
       return true;
     });
     
-    // Adăugăm la imaginile existente
+    
     const newImages = [...formik.values.images, ...validFiles];
     
-    // Limitarea la maxim 10 imagini
+   
     if (newImages.length > 10) {
       alert('Puteți încărca maxim 10 imagini.');
       return;
@@ -384,7 +382,7 @@ const CreateListingPage = () => {
     
     formik.setFieldValue('images', newImages);
     
-    // Creăm URL-uri pentru previzualizare
+  
     const newPreviews = validFiles.map(file => URL.createObjectURL(file));
     setPreviewImages([...previewImages, ...newPreviews]);
   };
@@ -395,12 +393,12 @@ const CreateListingPage = () => {
     formik.setFieldValue('images', updatedImages);
     
     const updatedPreviews = [...previewImages];
-    URL.revokeObjectURL(updatedPreviews[index]); // Eliberăm URL-ul
+    URL.revokeObjectURL(updatedPreviews[index]); 
     updatedPreviews.splice(index, 1);
     setPreviewImages(updatedPreviews);
   };
 
-  // Afișăm conținutul în funcție de pasul curent
+ 
   const getStepContent = (step) => {
     switch (step) {
       case 0:
@@ -991,11 +989,11 @@ const CreateListingPage = () => {
                 placeholder="Descrieți mașina în detaliu..."
                 sx={{
                   '& .MuiInputBase-root': {
-                    minHeight: '150px',  // Înălțimea minimă
-                    alignItems: 'flex-start'  // Aliniază eticheta în partea de sus
+                    minHeight: '150px',  
+                    alignItems: 'flex-start'  
                   },
                   '& .MuiInputBase-input': {
-                    overflow: 'auto'  // Permite scroll în interiorul câmpului
+                    overflow: 'auto'  
                   }
                 }}
               />
