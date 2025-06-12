@@ -10,7 +10,7 @@ class UserInteractionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         
-        # Verificăm dacă interacțiunea există deja
+       
         interaction, created = UserInteraction.objects.get_or_create(
             user=validated_data['user'],
             car_listing=validated_data['car_listing'],
@@ -18,7 +18,7 @@ class UserInteractionSerializer(serializers.ModelSerializer):
             defaults={'interaction_count': 1}
         )
         
-        # Dacă interacțiunea există, incrementăm contorul
+       
         if not created:
             interaction.interaction_count += 1
             interaction.save()
