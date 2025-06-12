@@ -39,7 +39,7 @@ const ImageGallery = ({ images }) => {
 
   return (
     <Box sx={{ flexGrow: 1, position: 'relative' }}>
-      {/* Imagine principală */}
+     
       <Box
         sx={{
           height: 400,
@@ -85,7 +85,7 @@ const ImageGallery = ({ images }) => {
         </Box>
       </Box>
 
-      {/* Miniaturi */}
+     
       <Box sx={{ mt: 2, mb: 1, display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
         {images.map((image, index) => (
           <Box
@@ -115,7 +115,7 @@ const ImageGallery = ({ images }) => {
         ))}
       </Box>
 
-      {/* Stepper pentru navigare */}
+     
       <MobileStepper
         variant="text"
         steps={maxSteps}
@@ -143,7 +143,7 @@ const ImageGallery = ({ images }) => {
         }
       />
 
-      {/* Dialog pentru vizualizare fullscreen */}
+      
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
