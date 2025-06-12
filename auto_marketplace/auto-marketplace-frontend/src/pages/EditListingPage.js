@@ -32,7 +32,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-// Importăm opțiunile
+
 import {
   brandOptions,
   conditionOptions,
@@ -42,9 +42,9 @@ import {
   emissionOptions,
   colorOptions,
   bodyTypeOptions
-} from '../utils/options'; // Creează acest fișier cu opțiunile din CreateListingPage
+} from '../utils/options'; 
 
-// Schema de validare pentru anunț (aceeași ca la creare)
+
 const validationSchema = Yup.object({
   title: Yup.string()
     .min(5, 'Titlul trebuie să aibă minim 5 caractere')
@@ -74,7 +74,7 @@ const validationSchema = Yup.object({
   transmission: Yup.string().required('Cutia de viteze este obligatorie'),
   drive_type: Yup.string().required('Tracțiunea este obligatorie'),
   emission_standard: Yup.string().required('Norma de poluare este obligatorie'),
-  description: Yup.string(), // Eliminăm limita de caractere
+  description: Yup.string(), 
   features: Yup.array().of(
     Yup.object().shape({
       feature_name: Yup.string().notRequired('Numele dotării este obligatoriu'),
@@ -90,7 +90,7 @@ const validationSchema = Yup.object({
   location: Yup.string(),
 });
 
-// Pașii pentru formular
+
 const steps = ['Informații de bază', 'Detalii tehnice', 'Imagini și descriere', 'Finalizare'];
 
 const EditListingPage = () => {
@@ -106,19 +106,19 @@ const EditListingPage = () => {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
 
-  // Verifică dacă utilizatorul are permisiuni să editeze anunțul
+  
   useEffect(() => {
     const checkPermissions = async () => {
       try {
         setLoading(true);
         const fetchedListing = await listingsAPI.getListing(id);
         
-        // Verifică dacă utilizatorul este proprietarul anunțului sau un administrator
+        
         if (user && (user.id === fetchedListing.user.id || user.is_admin)) {
           setIsAuthorized(true);
           setListing(fetchedListing);
           
-          // Inițializăm imaginile existente
+          
           if (fetchedListing.images && fetchedListing.images.length > 0) {
             setExistingImages(fetchedListing.images);
           }
@@ -139,7 +139,7 @@ const EditListingPage = () => {
     }
   }, [id, user]);
 
-  // Formik pentru gestionarea formularului
+  
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -168,27 +168,27 @@ const EditListingPage = () => {
       location: '',
     },
     validationSchema,
-    enableReinitialize: true, // Important pentru a actualiza valorile când primim datele
+    enableReinitialize: true, 
     onSubmit: async (values) => {
       setLoading(true);
       setError(null);
       
       try {
-        // Creăm un FormData pentru a trimite imaginile
+        
         const formData = new FormData();
         console.log("Valorile formularului înainte de trimitere:", values);
         console.log("Features înainte de filtrare:", values.features);
         
-        // Adăugăm fiecare câmp la FormData
+      
         for (const key in values) {
           if (key === 'images') {
-            // Adăugăm doar imaginile noi
+            
             values.images.forEach((image) => {
               formData.append('new_images', image);
             });
           } 
           else if (key === 'features') {
-            // Adăugăm dotările ca JSON
+            
           const filteredFeatures = values.features
           .filter(f => f.feature_name && f.feature_name.trim() !== '')
           .map(f => ({
@@ -208,26 +208,26 @@ const EditListingPage = () => {
           }
         }
         
-        // Adăugăm ID-urile imaginilor care trebuie șterse
+        
         if (imagesToDelete.length > 0) {
           formData.append('images_to_delete', JSON.stringify(imagesToDelete));
         }
         
-        // Actualizăm anunțul
+      
         await listingsAPI.updateListing(id, formData);
         
-        // Redirecționăm către pagina anunțului
+        
         navigate(`/listings/${id}`);
       } catch (err) {
         console.error('Eroare la actualizarea anunțului:', err);
         
-        // Gestionăm diferit tipurile de erori
+        
         if (err.detail) {
           setError(err.detail);
         } else if (err.message) {
           setError(err.message);
         } else if (typeof err === 'object' && err !== null) {
-          // Transformă obiectul de eroare într-un mesaj lizibil
+        
           const errorMessages = Object.entries(err)
             .map(([key, value]) => `${key}: ${value}`)
             .join(', ');
@@ -241,7 +241,7 @@ const EditListingPage = () => {
     },
   });
 
-  // Când primim datele anunțului, actualizăm valorile formularului
+  
   useEffect(() => {
     if (listing) {
       console.log("Features primite de la API:", listing.features);
@@ -268,7 +268,7 @@ const EditListingPage = () => {
             }))
           : [{ feature_name: '', feature_value: '' }],
         images: [],
-        body_type: listing.body_type || '',  // În loc de undefined
+        body_type: listing.body_type || '',  
         right_hand_drive: listing.right_hand_drive ?? false,
         co2_emissions: listing.co2_emissions ?? '',
         seats: listing.seats ?? '',
@@ -281,9 +281,9 @@ const EditListingPage = () => {
     }
   }, [listing]);
 
-  // Gestionarea pașilor
+  
   const handleNext = () => {
-    // Validăm doar câmpurile din pasul curent
+    
     const fieldsToValidate = activeStep === 0
       ? ['title', 'brand', 'model', 'year_of_manufacture', 'price', 'condition_state', 'color']
       : activeStep === 1
@@ -292,17 +292,17 @@ const EditListingPage = () => {
       ? ['description']
       : [];
     
-    // Verificăm dacă există erori pentru câmpurile din pasul curent
+    
     const stepHasErrors = fieldsToValidate.some(field => 
       formik.touched[field] && formik.errors[field]
     );
     
-    // Marcăm câmpurile ca atinse pentru a vedea erorile
+    
     fieldsToValidate.forEach(field => {
       formik.setFieldTouched(field, true);
     });
     
-    // Dacă nu există erori, trecem la pasul următor
+   
     if (!stepHasErrors) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -312,7 +312,7 @@ const EditListingPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // Gestionarea adăugării/eliminării dotărilor
+
   const addFeature = () => {
     formik.setFieldValue('features', [
       ...formik.values.features,
@@ -326,11 +326,11 @@ const EditListingPage = () => {
     formik.setFieldValue('features', updatedFeatures);
   };
 
-  // Gestionarea încărcării imaginilor noi
+  
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
     
-    // Validăm fișierele (doar imagini, max 5MB)
+    
     const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
         alert(`Fișierul "${file.name}" nu este o imagine.`);
@@ -343,10 +343,10 @@ const EditListingPage = () => {
       return true;
     });
     
-    // Adăugăm la imaginile existente
+
     const newImages = [...formik.values.images, ...validFiles];
     
-    // Limitarea la maxim 10 imagini în total (existente + noi)
+    
     if (newImages.length + existingImages.length - imagesToDelete.length > 10) {
       alert('Puteți încărca maxim 10 imagini în total.');
       return;
@@ -354,24 +354,24 @@ const EditListingPage = () => {
     
     formik.setFieldValue('images', newImages);
     
-    // Creăm URL-uri pentru previzualizare
+ 
     const newPreviews = validFiles.map(file => URL.createObjectURL(file));
     setPreviewImages([...previewImages, ...newPreviews]);
   };
 
-  // Gestionarea eliminării imaginilor noi
+  
   const removeNewImage = (index) => {
     const updatedImages = [...formik.values.images];
     updatedImages.splice(index, 1);
     formik.setFieldValue('images', updatedImages);
     
     const updatedPreviews = [...previewImages];
-    URL.revokeObjectURL(updatedPreviews[index]); // Eliberăm URL-ul
+    URL.revokeObjectURL(updatedPreviews[index]); 
     updatedPreviews.splice(index, 1);
     setPreviewImages(updatedPreviews);
   };
 
-  // Gestionarea eliminării imaginilor existente
+  
   const removeExistingImage = (index) => {
     const imageToDelete = existingImages[index];
     setImagesToDelete([...imagesToDelete, imageToDelete.id]);
@@ -381,7 +381,7 @@ const EditListingPage = () => {
     setExistingImages(updatedExistingImages);
   };
 
-  // Afișăm loading în timpul încărcării datelor
+  
   if (loading && !listing) {
     return (
       <Container sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
@@ -390,7 +390,7 @@ const EditListingPage = () => {
     );
   }
 
-  // Afișăm mesaj dacă utilizatorul nu are permisiuni
+  
   if (!isAuthorized && !loading) {
     return (
       <Container sx={{ py: 4 }}>
@@ -409,7 +409,7 @@ const EditListingPage = () => {
     );
   }
 
-  // Afișăm eroarea dacă există
+ 
   if (error && !listing) {
     return (
       <Container sx={{ py: 4 }}>
@@ -423,7 +423,7 @@ const EditListingPage = () => {
     );
   }
 
-  // Afișăm conținutul în funcție de pasul curent
+  
   const getStepContent = (step) => {
     switch (step) {
       case 0:
@@ -1067,11 +1067,11 @@ const EditListingPage = () => {
                 placeholder="Descrieți mașina în detaliu..."
                 sx={{
                   '& .MuiInputBase-root': {
-                    minHeight: '150px',  // Înălțimea minimă
-                    alignItems: 'flex-start'  // Aliniază eticheta în partea de sus
+                    minHeight: '150px',  
+                    alignItems: 'flex-start'  
                   },
                   '& .MuiInputBase-input': {
-                    overflow: 'auto'  // Permite scroll în interiorul câmpului
+                    overflow: 'auto'  
                   }
                 }}
               />
@@ -1189,7 +1189,7 @@ const EditListingPage = () => {
           Editare anunț #{id}
         </Typography>
         
-        {/* Bandă de informații pentru administratori */}
+        
         {user && user.is_admin && user.id !== listing?.user?.id && (
           <Alert severity="info" sx={{ mb: 3 }}>
             <Typography variant="body2">
