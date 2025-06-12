@@ -43,9 +43,9 @@ const Chatbot = () => {
     }
   };
 
-  // Funcție pentru a trimite un mesaj și primi răspuns
+  
   const sendMessage = async (messageContent) => {
-    // Dacă nu avem thread, îl creăm
+    
     let currentThreadId = threadId || await createThread();
     
     if (!currentThreadId) {
@@ -57,7 +57,7 @@ const Chatbot = () => {
     }
 
     try {
-      // Adăugăm mesajul utilizatorului în thread
+     
       await axios.post(
         `https://api.openai.com/v1/threads/${currentThreadId}/messages`,
         {
@@ -73,7 +73,7 @@ const Chatbot = () => {
         }
       );
 
-      // Rulăm thread-ul cu asistentul
+      
       const runResponse = await axios.post(
         `https://api.openai.com/v1/threads/${currentThreadId}/runs`,
         {
@@ -88,10 +88,10 @@ const Chatbot = () => {
         }
       );
 
-      // Verificăm statusul run-ului
+      
       let runStatus;
       do {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Așteptăm 1 secundă între verificări
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
         
         const statusResponse = await axios.get(
           `https://api.openai.com/v1/threads/${currentThreadId}/runs/${runResponse.data.id}`,
@@ -106,7 +106,7 @@ const Chatbot = () => {
         runStatus = statusResponse.data.status;
       } while (runStatus !== 'completed' && runStatus !== 'failed');
 
-      // Preluăm mesajele
+     
       const messagesResponse = await axios.get(
         `https://api.openai.com/v1/threads/${currentThreadId}/messages`,
         {
@@ -117,7 +117,7 @@ const Chatbot = () => {
         }
       );
 
-      // Găsim ultimul mesaj de la asistent
+      
       const assistantMessages = messagesResponse.data.data
         .filter(msg => msg.role === 'assistant')
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -145,10 +145,10 @@ const Chatbot = () => {
     
     if (!message.trim()) return;
     
-    // Adăugăm mesajul utilizatorului în istoric
+    
     setChatHistory(prev => [...prev, { sender: 'user', text: message }]);
     
-    // Resetăm inputul și setăm starea de încărcare
+    
     const currentMessage = message;
     setMessage('');
     setLoading(true);
@@ -156,12 +156,12 @@ const Chatbot = () => {
     try {
       await sendMessage(currentMessage);
     } finally {
-      // Resetăm starea de încărcare
+      
       setLoading(false);
     }
   };
 
-  // Restul componentei rămâne la fel
+ 
   const toggleChat = () => {
     setOpen(!open);
   };
@@ -171,7 +171,7 @@ const Chatbot = () => {
   };
 
   return (
-    // ... (codul HTML/JSX rămâne identic cu versiunea anterioară)
+    
     <>
       <Fab
         color="primary"
@@ -256,8 +256,8 @@ const Chatbot = () => {
                   }}
                   dangerouslySetInnerHTML={{
                     __html: chat.text
-                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold între ** **
-                      .replace(/\n/g, '<br/>') // newline => <br/>
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+                      .replace(/\n/g, '<br/>') 
                       .replace(/(?:<br\s*\/?>)?(\d+)\.\s+(.*?)(?=(<br\s*\/?>\d+\.\s)|$)/gs, (match, num, content) => {
                         return `<li>${content.trim()}</li>`;
                       })
