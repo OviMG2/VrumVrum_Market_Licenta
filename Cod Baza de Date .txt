@@ -1,0 +1,156 @@
+-- Crearea bazei de date
+CREATE DATABASE IF NOT EXISTS auto_marketplace;
+-- DROP database auto_marketplace; 
+USE auto_marketplace;
+
+-- Tabelul pentru utilizatori
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    real_name VARCHAR(100) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login datetime null,
+    is_active boolean default true,
+    is_staff boolean default false,
+    is_superuser boolean default false,
+    phone_number varchar(15) null,
+    display_name varchar(100) null,
+    city varchar(100) null,
+    county varchar(100) null,
+    profile_image varchar(255) null,
+    bio text null,
+    show_email boolean default true,
+    show_phone boolean default true
+);
+
+ALTER TABLE users
+ADD COLUMN last_activity DATETIME NULL;
+
+UPDATE users
+SET last_activity = COALESCE(last_login, created_at);
+
+-- Tabelul pentru anunțurile de mașini
+
+CREATE TABLE IF NOT EXISTS car_listings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    mileage INT NOT NULL, -- Kilometraj
+    power INT NOT NULL, -- Cai putere
+    engine_capacity INT NOT NULL, -- Capacitate cilindrică în cm³
+    color VARCHAR(30) NOT NULL, -- Culoare
+    condition_state ENUM('nou', 'ocazie', 'avariat') NOT NULL, -- Stare
+    year_of_manufacture YEAR NOT NULL, -- Anul fabricației
+    fuel_type ENUM('benzina', 'diesel', 'electric', 'hibrid', 'GPL', 'altele') NOT NULL, -- Combustibil
+    price INT NOT NULL, -- Preț
+    emission_standard VARCHAR(20) NOT NULL, -- Norma de poluare (Euro 5, Euro 6, etc.)
+    transmission ENUM('manuala', 'automata', 'semi-automata') NOT NULL, -- Cutie de viteze
+    drive_type ENUM('fata', 'spate', '4x4') NOT NULL, -- Tracțiune
+    description TEXT, -- Descriere detaliată și dotări
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE car_listings
+ADD COLUMN body_type VARCHAR(50) NULL COMMENT 'Tip caroserie (sedan, SUV, etc.)',
+ADD COLUMN right_hand_drive BOOLEAN DEFAULT FALSE COMMENT 'Volan pe dreapta',
+ADD COLUMN co2_emissions INT NULL COMMENT 'Emisii CO2 (g/km)',
+ADD COLUMN seats INT NULL COMMENT 'Număr locuri',
+ADD COLUMN doors INT NULL COMMENT 'Număr uși',
+ADD COLUMN registered BOOLEAN DEFAULT FALSE COMMENT 'Înmatriculat',
+ADD COLUMN hybrid_type VARCHAR(20) NULL COMMENT 'Tip hibrid (benzina/diesel)',
+ADD COLUMN location VARCHAR(100) NULL COMMENT 'Localitate (unde se vinde mașina)';
+
+-- Actualizează tipul de combustibil
+ALTER TABLE car_listings
+MODIFY COLUMN fuel_type ENUM('benzina', 'diesel', 'electric', 'hibrid_benzina', 'hibrid_diesel', 'GPL', 'altele') NOT NULL;
+
+ALTER TABLE car_listings 
+MODIFY COLUMN fuel_type VARCHAR(20) NOT NULL;
+
+-- Dacă există deja înregistrări cu hibrid, le actualizezi
+UPDATE car_listings
+SET fuel_type = 'hibrid_benzina'
+WHERE fuel_type = 'hibrid';
+
+
+
+-- Tabelul pentru imaginile mașinilor
+CREATE TABLE IF NOT EXISTS car_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    car_listing_id INT NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    is_main BOOLEAN DEFAULT FALSE, -- Imagine principală sau secundară
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (car_listing_id) REFERENCES car_listings(id) ON DELETE CASCADE
+);
+
+-- Tabelul pentru anunțurile favorite
+CREATE TABLE IF NOT EXISTS favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    car_listing_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_favorite (user_id, car_listing_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (car_listing_id) REFERENCES car_listings(id) ON DELETE CASCADE
+);
+
+-- Tabelul pentru stocarea caracteristicilor specifice ale mașinilor (dotări)
+CREATE TABLE IF NOT EXISTS car_features (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    car_listing_id INT NOT NULL,
+    feature_name VARCHAR(100) NOT NULL,
+    feature_value VARCHAR(255),
+    FOREIGN KEY (car_listing_id) REFERENCES car_listings(id) ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE IF NOT EXISTS user_interactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    car_listing_id INT NOT NULL,
+    interaction_type ENUM('vizualizare', 'favorit', 'contact') NOT NULL,
+    interaction_count INT DEFAULT 1,
+    last_interaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    first_interaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    interaction_score FLOAT DEFAULT 0.0,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (car_listing_id) REFERENCES car_listings(id) ON DELETE CASCADE,
+    UNIQUE KEY user_listing_type (user_id, car_listing_id, interaction_type),
+    INDEX user_type_idx (user_id, interaction_type),
+    INDEX listing_type_idx (car_listing_id, interaction_type),
+    INDEX last_interaction_idx (last_interaction)
+);
+
+ALTER TABLE user_interactions 
+MODIFY COLUMN interaction_count FLOAT DEFAULT 1.0;
+
+
+-- Crearea indexurilor pentru optimizarea interogărilor
+CREATE INDEX idx_car_listings_brand ON car_listings(brand);
+CREATE INDEX idx_car_listings_model ON car_listings(model);
+CREATE INDEX idx_car_listings_price ON car_listings(price);
+CREATE INDEX idx_car_listings_year ON car_listings(year_of_manufacture);
+CREATE INDEX idx_car_listings_mileage ON car_listings(mileage);
+
+ALTER TABLE car_listings 
+MODIFY COLUMN condition_state VARCHAR(20) NOT NULL;
+
+UPDATE car_listings 
+SET condition_state = 'utilizat' 
+WHERE condition_state = 'ocazie';
+
+ALTER TABLE car_listings 
+MODIFY COLUMN condition_state ENUM('nou', 'utilizat', 'avariat') NOT NULL;
+
+DELETE FROM user_interactions WHERE interaction_type = 'vizualizare';
