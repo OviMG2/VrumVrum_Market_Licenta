@@ -21,11 +21,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Aplicații terțe
+  
     'rest_framework',
     'corsheaders',
     
-    # Aplicațiile noastre
+
     'users',
     'listings',
     'recommendations',
@@ -63,7 +63,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'auto_marketplace_backend.wsgi.application'
 
-# Configurare bază de date
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -78,7 +78,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -100,7 +100,7 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_USER_MODEL = 'users.User'
 
-# Internationalization
+
 LANGUAGE_CODE = 'ro'
 TIME_ZONE = 'Europe/Bucharest'
 USE_I18N = True
@@ -124,10 +124,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    # Dezactivăm permisiunile implicite care cer autentificare
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
+  
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_PAGINATION_PARAMS': {
@@ -138,7 +135,7 @@ REST_FRAMEWORK = {
 
 # Configurare CORS (Cross-Origin Resource Sharing)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Frontend React
+    "http://localhost:3000", 
     "http://127.0.0.1:3000",
 ]
 CORS_ALLOW_METHODS = [
@@ -169,10 +166,10 @@ from datetime import timedelta
 
 # Configurare pentru JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  # Token de acces valabil 1 ora
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token valabil 7 zile
-    'ROTATE_REFRESH_TOKENS': True,  # Genereaza un nou refresh token la fiecare utilizare
-    'BLACKLIST_AFTER_ROTATION': True,  # Adauga token-urile rotite în blacklist
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  
+    'ROTATE_REFRESH_TOKENS': True,  
+    'BLACKLIST_AFTER_ROTATION': True,  
     
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
@@ -189,7 +186,7 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }
 
-# Configurare cache
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
