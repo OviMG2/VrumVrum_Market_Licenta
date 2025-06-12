@@ -37,10 +37,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # Adăugăm field pentru ultima activitate
+   
     last_activity = models.DateTimeField(default=timezone.now)
     
-    # Noile câmpuri adăugate
+
     phone_number = models.CharField(
         max_length=15, 
         blank=True, 
@@ -55,13 +55,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     show_email = models.BooleanField(default=True)
     show_phone = models.BooleanField(default=True)
     
-    # Adăugare related_name pentru a rezolva conflictele
+    
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
         blank=True,
         help_text='The groups this user belongs to.',
-        related_name='user_custom_set',  # Nume personalizat
+        related_name='user_custom_set',  
         related_query_name='user',
     )
     user_permissions = models.ManyToManyField(
@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='user permissions',
         blank=True,
         help_text='Specific permissions for this user.',
-        related_name='user_custom_set',  # Nume personalizat
+        related_name='user_custom_set', 
         related_query_name='user',
     )
 
