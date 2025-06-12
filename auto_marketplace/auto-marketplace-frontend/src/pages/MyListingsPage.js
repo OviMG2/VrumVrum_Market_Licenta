@@ -39,39 +39,39 @@ const MyListingsPage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
-  const itemsPerPage = 10; // Numărul de anunțuri pe pagină
+  const itemsPerPage = 10; 
 
   useEffect(() => {
-    // Verificăm dacă utilizatorul este autentificat
+    
     if (!isAuthenticated) {
       navigate('/login', { state: { from: '/my-listings' } });
       return;
     }
 
-    // Obținem toate anunțurile utilizatorului
+    
     const fetchAllMyListings = async () => {
       try {
         setLoading(true);
         
-        // Obținem prima pagină pentru a afișa ceva rapid
+        
         const initialData = await listingsAPI.getMyListings({ page: 1, limit: itemsPerPage });
         console.log('Prima pagină de anunțuri:', initialData);
         
         if (Array.isArray(initialData?.results)) {
           setListings(initialData.results);
           
-          // Dacă avem informații despre paginare în răspuns
+         
           if (initialData.count) {
             setTotalPages(Math.ceil(initialData.count / itemsPerPage));
           }
           
-          // Acum încărcăm toate anunțurile (poate dura mai mult)
+          
           setLoadingMore(true);
           let allItems = [...initialData.results];
           let currentPage = 2;
           let hasMorePages = initialData.next != null;
           
-          // Continuăm să încărcăm pagini până când am obținut toate anunțurile
+          
           while (hasMorePages) {
             const moreData = await listingsAPI.getMyListings({ page: currentPage, limit: itemsPerPage });
             
@@ -88,12 +88,12 @@ const MyListingsPage = () => {
           setTotalPages(Math.ceil(allItems.length / itemsPerPage));
           setLoadingMore(false);
         } else {
-          // Încercăm o abordare alternativă - poate API-ul returnează direct lista
+          
           console.log('Încerc abordare alternativă pentru obținerea anunțurilor');
-          const directData = await listingsAPI.getMyListings({ limit: 1000 }); // Limită mare pentru a obține toate
+          const directData = await listingsAPI.getMyListings({ limit: 1000 }); 
           
           if (Array.isArray(directData)) {
-            setListings(directData.slice(0, itemsPerPage)); // Primele elemente pentru prima pagină
+            setListings(directData.slice(0, itemsPerPage)); 
             setAllListings(directData);
             setTotalPages(Math.ceil(directData.length / itemsPerPage));
           } else {
@@ -117,38 +117,38 @@ const MyListingsPage = () => {
     fetchAllMyListings();
   }, [isAuthenticated, navigate]);
 
-  // Gestionează schimbarea paginii
+  
   const handlePageChange = (event, value) => {
     setPage(value);
     const startIndex = (value - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     setListings(allListings.slice(startIndex, endIndex));
     
-    // Derulăm la începutul listei pentru o experiență mai bună
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Funcția pentru a formata data
+  
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('ro-RO', options);
   };
 
-  // Funcția pentru ștergerea unui anunț
+  
   const handleDelete = async (id) => {
     if (window.confirm('Sunteți sigur că doriți să ștergeți acest anunț?')) {
       try {
         await listingsAPI.deleteListing(id);
         
-        // Actualizăm atât lista vizibilă cât și lista completă
+        
         setAllListings(prevListings => prevListings.filter(listing => listing.id !== id));
         setListings(prevListings => prevListings.filter(listing => listing.id !== id));
         
-        // Recalculăm numărul total de pagini
+        
         const newTotalPages = Math.ceil((allListings.length - 1) / itemsPerPage);
         setTotalPages(newTotalPages);
         
-        // Dacă pagina curentă este mai mare decât noul număr total de pagini, revenim la ultima pagină
+        
         if (page > newTotalPages && newTotalPages > 0) {
           handlePageChange(null, newTotalPages);
         }
@@ -319,7 +319,7 @@ const MyListingsPage = () => {
             ))}
           </Grid>
           
-          {/* Paginare pentru anunțuri */}
+          
           {totalPages > 1 && (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
               <Pagination 
