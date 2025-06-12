@@ -41,16 +41,16 @@ class CarListingViewSet(viewsets.ModelViewSet):
         Configurare permisiuni in funcție de acțiune.
         """
         if self.action in ['list', 'retrieve']:
-            # Permitem oricui să vadă listele și detaliile
+       
             return [AllowAny()]
         elif self.action in ['create', 'update', 'partial_update', 'destroy']:
-            # Pentru a crea/edita/șterge anunțuri, utilizatorul trebuie să fie autentificat
+            
             return [IsAuthenticated()]
         elif self.action == 'favorite':
-            # Pentru a marca un anunț ca favorit, utilizatorul trebuie să fie autentificat
+       
             return [IsAuthenticated()]
         else:
-            # Pentru alte acțiuni, utilizăm permisiunea personalizată
+
             return [IsOwnerOrAdminOrReadOnly()]
     
     def get_serializer_class(self):
@@ -67,7 +67,7 @@ class CarListingViewSet(viewsets.ModelViewSet):
         print("Date primite:", request.data)
         print("Fișiere încărcate:", request.FILES)
     
-            # Dacă features sunt trimise ca string, încearca să le convert
+         
         if 'features' in request.data :
             try:
                 request.data['features'] = json.loads(request.data['features'])
@@ -82,14 +82,14 @@ class CarListingViewSet(viewsets.ModelViewSet):
             instance = self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
         
-        # Returnam datele complete, inclusiv ID
+       
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         except Exception as e:
             print("Eroare la crearea anunțului:", str(e))
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
-    # Salvează anunțul și asociază-l cu utilizatorul curent
+   
         return serializer.save(user=self.request.user)
     
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
@@ -97,14 +97,14 @@ class CarListingViewSet(viewsets.ModelViewSet):
         car_listing = self.get_object()
         user = request.user
         
-        # Verificăm dacă anunțul este deja în favorite
+    
         favorite, created = Favorite.objects.get_or_create(
             user=user,
             car_listing=car_listing
         )
         
         if not created:
-            # Dacă există deja, îl ștergem (toggle)
+       
             favorite.delete()
             return Response({"status": "removed from favorites"}, status=status.HTTP_200_OK)
         
@@ -147,8 +147,8 @@ def loan_calculator(request):
     """
     price = request.data.get('price')
     down_payment = request.data.get('down_payment', 0)
-    loan_term = request.data.get('loan_term', 60)  # durata luni
-    interest_rate = request.data.get('interest_rate', 7.5)  # rata anual în procente
+    loan_term = request.data.get('loan_term', 60)  
+    interest_rate = request.data.get('interest_rate', 7.5)  
     
     if not price:
         return Response(
@@ -167,27 +167,27 @@ def loan_calculator(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Calculul valorii împrumutului
+ 
     loan_amount = price - down_payment
     
-    # Dacă avansul este mai mare sau egal cu prețul
+ 
     if loan_amount <= 0:
         return Response(
             {"error": "Avansul nu poate fi mai mare sau egal cu prețul mașinii"}, 
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Conversia ratei dobânzii anuale în rată lunară
+
     monthly_interest_rate = interest_rate / 100 / 12
     
-    # Calculul plății lunare folosind formula standard pentru împrumut
+
     monthly_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** loan_term) / ((1 + monthly_interest_rate) ** loan_term - 1)
     
-    # Calculul dobânzii totale
+  
     total_payment = monthly_payment * loan_term
     total_interest = total_payment - loan_amount
     
-    # Crearea unui plan de rambursare
+
     payment_schedule = []
     remaining_balance = loan_amount
     
@@ -196,7 +196,7 @@ def loan_calculator(request):
         principal_payment = monthly_payment - interest_payment
         remaining_balance -= principal_payment
         
-        if month <= 12 or month % 12 == 0 or month == loan_term:  # Primele 12 luni, lunile din an și ultima lună
+        if month <= 12 or month % 12 == 0 or month == loan_term:  
             payment_schedule.append({
                 'month': month,
                 'payment': round(monthly_payment, 2),
@@ -225,21 +225,20 @@ def loan_calculator(request):
 def user_listings(request, user_id):
     """Returnează toate anunțurile publice ale unui utilizator"""
     try:
-        # Obține anunțurile utilizatorului specificat - folosim modelul CarListing
+       
         listings = CarListing.objects.filter(user_id=user_id)
-        
-        # Verifică dacă există câmpul is_active în model și folosește-l pentru filtrare dacă există
+      
         if hasattr(CarListing, 'is_active'):
             listings = listings.filter(is_active=True)
         
-        # Ordonează după data creării (descrescător)
+      
         listings = listings.order_by('-created_at')
         
-        # Serializarea anunțurilor
+     
         serializer = CarListingSerializer(listings, many=True, context={'request': request})
         return Response(serializer.data)
     except Exception as e:
-        # Log exact error debugging
+       
         logger.error(f"Error in user_listings view: {str(e)}")
         
         return Response(
@@ -256,40 +255,40 @@ def similar_listings(request, pk):
     Similitudinea este determinată de marca, model, combustibil și an de fabricație.
     """
     try:
-        # Obținem anunțul de referință
+     
         car_listing = CarListing.objects.get(pk=pk)
         
         
-        # Marca este cel mai important, apoi modelul, combustibilul și anul fabricației
+     
         similar_listings = CarListing.objects.filter(
-            brand=car_listing.brand  # Căutăm aceeași marcă
+            brand=car_listing.brand 
         ).exclude(
-            id=pk  # Excludem anunțul curent
+            id=pk  
         )
         
-        # Filtrăm și după model dacă sunt mai mult de 10 rezultate
+       
         if similar_listings.count() > 10:
             model_similar = similar_listings.filter(model=car_listing.model)
-            if model_similar.count() >= 3:  # Dacă găsim suficiente cu același model
+            if model_similar.count() >= 3:  
                 similar_listings = model_similar
         
-        # Adăugăm un scor de similitudine pentru a sorta rezultatele
+      
         similar_with_score = []
         for listing in similar_listings:
             score = 0
             
-            # Marca este identică (valoare mare)
+           
             score += 100
             
-            # Verificăm modelul (al doilea ca importanță)
+       
             if listing.model == car_listing.model:
                 score += 50
             
-            # Verificăm combustibilul
+          
             if listing.fuel_type == car_listing.fuel_type:
                 score += 25
             
-            # Verificăm proximitatea anului de fabricație (cu cât e mai aproape, cu atât e mai similar)
+        
             year_diff = abs(listing.year_of_manufacture - car_listing.year_of_manufacture)
             if year_diff == 0:
                 score += 25
@@ -302,16 +301,16 @@ def similar_listings(request, pk):
             
             similar_with_score.append((listing, score))
         
-        # Sortăm după scorul de similitudine
+    
         similar_with_score.sort(key=lambda x: x[1], reverse=True)
         
-        # Luăm primele 6 rezultate
+        
         top_similar = [item[0] for item in similar_with_score[:6]]
         
-        # Dacă nu avem suficiente rezultate, adăugăm și alte mașini din aceeași categorie de preț
+        
         if len(top_similar) < 3:
-            price_range_min = car_listing.price * 0.7  # -30%
-            price_range_max = car_listing.price * 1.3  # +30%
+            price_range_min = car_listing.price * 0.7  
+            price_range_max = car_listing.price * 1.3 
             
             additional_listings = CarListing.objects.filter(
                 price__gte=price_range_min,
@@ -320,11 +319,11 @@ def similar_listings(request, pk):
                 id=pk
             ).exclude(
                 id__in=[l.id for l in top_similar]
-            ).order_by('?')[:6-len(top_similar)]  # Completăm până la 6 rezultate random
+            ).order_by('?')[:6-len(top_similar)]  
             
             top_similar.extend(additional_listings)
         
-        # Serializăm rezultatele
+     
         serializer = CarListingSerializer(top_similar, many=True, context={'request': request})
         return Response(serializer.data)
     
