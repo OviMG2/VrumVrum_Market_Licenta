@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Material UI
+
 import {
   Container,
   Typography,
@@ -23,7 +23,7 @@ import {
   DialogTitle
 } from '@mui/material';
 
-// Icons
+
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,7 +33,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { Mail, Phone } from 'react-feather';
 
-// Context and Services
+
 import { useAuth } from '../context/AuthContext';
 import { listingsAPI } from '../services/api';
 
@@ -42,7 +42,7 @@ const UserProfilePage = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
 
-  // State
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,14 +50,14 @@ const UserProfilePage = () => {
   const [userListings, setUserListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(true);
 
-  // Dialog states
+  
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
 
   const baseURL = 'http://localhost:8000';
 
-  // Format date helper function
+  
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -76,7 +76,7 @@ const UserProfilePage = () => {
     }
   };
 
-  // Helper to get image URL
+  
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
 
@@ -93,7 +93,7 @@ const UserProfilePage = () => {
     return `${baseURL}/media/profile_images/${imagePath}?t=${timestamp}`;
   };
 
-  // Fetch user data
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -117,7 +117,7 @@ const UserProfilePage = () => {
     fetchUserData();
   }, [userId]);
 
-  // Fetch user listings
+  
   useEffect(() => {
     const fetchUserListings = async () => {
       try {
@@ -137,19 +137,19 @@ const UserProfilePage = () => {
     }
   }, [userId]);
 
-  // Check if own profile and redirect if necessary
+  
   useEffect(() => {
     if (currentUser && currentUser.id === parseInt(userId)) {
       navigate('/profile');
     }
   }, [currentUser, userId, navigate]);
 
-  // Handler for listing click
+
   const handleListingClick = (listingId) => {
     navigate(`/listings/${listingId}`);
   };
 
-  // Admin handlers
+  
   const handleDeleteAccount = async () => {
     try {
       setLoading(true);
@@ -186,7 +186,7 @@ const UserProfilePage = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      // Reload user data
+      
       const response = await axios.get(`${baseURL}/api/users/${userId}/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -214,7 +214,7 @@ const UserProfilePage = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      // Reload user data
+      
       const response = await axios.get(`${baseURL}/api/users/${userId}/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -233,10 +233,10 @@ const UserProfilePage = () => {
     navigate(`/admin/users/edit/${userId}`);
   };
 
-  // Check if current user is admin
+  
   const isAdmin = currentUser && currentUser.is_admin;
 
-  // Loading state
+  
   if (loading) {
     return (
       <Container sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
@@ -245,7 +245,7 @@ const UserProfilePage = () => {
     );
   }
 
-  // Error state
+  
   if (error) {
     return (
       <Container sx={{ py: 4 }}>
@@ -254,7 +254,7 @@ const UserProfilePage = () => {
     );
   }
 
-  // No user found
+  
   if (!user) {
     return (
       <Container sx={{ py: 4 }}>
@@ -269,7 +269,7 @@ const UserProfilePage = () => {
         Profil utilizator
       </Typography>
 
-      {/* Admin actions panel */}
+      
       {isAdmin && (
         <Paper elevation={3} sx={{ p: 2, mb: 3, bgcolor: 'info.light' }}>
           <Typography variant="h6" gutterBottom>
@@ -328,7 +328,7 @@ const UserProfilePage = () => {
         </Paper>
       )}
 
-      {/* User profile information */}
+   
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Box sx={{
           display: 'flex',
@@ -349,7 +349,7 @@ const UserProfilePage = () => {
               {user.username?.charAt(0).toUpperCase() || "U"}
             </Avatar>
 
-            {/* Online status indicator */}
+
             <Box
               sx={{
                 position: 'absolute',
@@ -410,7 +410,7 @@ const UserProfilePage = () => {
               </Typography>
             )}
 
-            {/* Adăugăm secțiunea pentru bio */}
+     
             {user.bio && (
               <>
                 <Divider sx={{ my: 2 }} />
@@ -435,7 +435,7 @@ const UserProfilePage = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        {/* Contact buttons */}
+      
         <Grid container spacing={2}>
           {user.show_email && user.email && (
             <Grid item xs={12} sm={6}>
@@ -474,7 +474,7 @@ const UserProfilePage = () => {
         </Grid>
       </Paper>
 
-      {/* User listings */}
+    
       <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>
           Anunțuri publicate
@@ -534,7 +534,7 @@ const UserProfilePage = () => {
         )}
       </Paper>
 
-      {/* Dialog: Delete account confirmation */}
+   
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
@@ -561,7 +561,7 @@ const UserProfilePage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog: Toggle admin status */}
+    
       <Dialog
         open={adminDialogOpen}
         onClose={() => setAdminDialogOpen(false)}
@@ -592,7 +592,7 @@ const UserProfilePage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog: Toggle active status */}
+   
       <Dialog
         open={blockDialogOpen}
         onClose={() => setBlockDialogOpen(false)}
